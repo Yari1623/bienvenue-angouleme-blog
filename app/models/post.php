@@ -2,14 +2,26 @@
 
 namespace App\Models;
 
-use App\Core\Model;
+use App\Core\Database;
 
-class Post extends Model
+class Post
 {
-    public function count(): int
+    public static function all(): array
     {
-        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM posts");
-        $result = $stmt->fetch();
-        return (int)$result['total'];
+        $pdo = Database::getPDO();
+        $stmt = $pdo->query("SELECT * FROM posts ORDER BY created_at DESC");
+        return $stmt->fetchAll();
+    }
+
+    public static function create(array $data): void
+    {
+        $pdo = Database::getPDO();
+
+        $stmt = $pdo->prepare("
+            INSERT INTO posts (title, slug, content, author_id, status)
+            VALUES (:title, :slug, :content, :author_id, 'draft')
+        ");
+
+        $stmt->execute($data);
     }
 }

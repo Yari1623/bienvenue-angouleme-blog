@@ -3,19 +3,29 @@
 namespace App\Controllers;
 
 use App\Core\Database;
+use App\Models\Post;
 use App\Helpers\Slug;
-use PDO;
 
 class PostController
 {
+    public function index(): void
+    {
+        $posts = Post::all();
+
+        require_once __DIR__ . '/../../views/admin/posts/index.php';
+    }
+
+    public function create(): void
+    {
+        require_once __DIR__ . '/../../views/admin/posts/create.php';
+    }
+
     public function store(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /');
+            header('Location: /admin/posts');
             exit;
         }
-
-        $pdo = Database::getInstance();
 
         $title   = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
@@ -27,19 +37,14 @@ class PostController
             exit;
         }
 
-        // Génération slug unique
+        $pdo = Database::getPDO();
         $slug = Slug::generateUnique($pdo, $title);
 
-        $stmt = $pdo->prepare("
-            INSERT INTO posts (title, slug, content, author_id, status)
-            VALUES (:title, :slug, :content, :author, 'draft')
-        ");
-
-        $stmt->execute([
-            'title'   => $title,
-            'slug'    => $slug,
-            'content' => $content,
-            'author'  => $author
+        Post::create([
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'author_id' => $author
         ]);
 
         $_SESSION['success'] = "Article créé avec succès";

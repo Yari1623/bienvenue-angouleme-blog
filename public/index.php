@@ -24,6 +24,7 @@ App\Core\Autoloader::register();
 */
 use App\Core\Env;
 use App\Core\Router;
+use App\Core\Database;
 
 Env::load(__DIR__ . '/../.env');
 
@@ -32,7 +33,6 @@ Env::load(__DIR__ . '/../.env');
 | Configuration
 |--------------------------------------------------------------------------
 */
-require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
 
 /*
@@ -54,4 +54,4 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // Supprime le dossier du projet en local
 $uri = str_replace('/bienvenue-angouleme-blog/public', '', $uri);
 
-$router->dispatch($uri);
+$router->dispatch(trim($uri, '/'));
