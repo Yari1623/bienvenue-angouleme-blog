@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+/*
+|--------------------------------------------------------------------------
+| Session
+|--------------------------------------------------------------------------
+*/
 session_start();
 
 /*
@@ -14,7 +19,17 @@ App\Core\Autoloader::register();
 
 /*
 |--------------------------------------------------------------------------
-| Environment
+| Charger .env
+|--------------------------------------------------------------------------
+*/
+use App\Core\Env;
+use App\Core\Router;
+
+Env::load(__DIR__ . '/../.env');
+
+/*
+|--------------------------------------------------------------------------
+| Configuration
 |--------------------------------------------------------------------------
 */
 require_once __DIR__ . '/../config/app.php';
@@ -25,10 +40,18 @@ require_once __DIR__ . '/../config/database.php';
 | Router
 |--------------------------------------------------------------------------
 */
-use App\Core\Router;
-
 $router = new Router();
 
 require_once __DIR__ . '/../config/routes.php';
 
-$router->dispatch($_GET['url'] ?? '/');
+/*
+|--------------------------------------------------------------------------
+| Nettoyage URI
+|--------------------------------------------------------------------------
+*/
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Supprime le dossier du projet en local
+$uri = str_replace('/bienvenue-angouleme-blog/public', '', $uri);
+
+$router->dispatch($uri);
