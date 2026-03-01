@@ -6,10 +6,10 @@ use App\Models\User;
 
 class Auth
 {
-    public static function attempt(string $email, string $password): bool
+    public static function attempt(string $login, string $password): bool
     {
         $userModel = new User();
-        $user = $userModel->findByEmail($email);
+        $user = $userModel->findByLogin($login);
 
         if (!$user) {
             return false;

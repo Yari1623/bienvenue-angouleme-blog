@@ -15,10 +15,10 @@ class LoginController extends Controller
 
     public function login(): void
     {
-        $email = $_POST['email'] ?? '';
+        $login = $_POST['login'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        if (Auth::attempt($email, $password)) {
+       if (Auth::attempt($login, $password)) {
             Flash::success('Connexion réussie');
             header('Location: /bienvenue-angouleme-blog/public');
             exit;

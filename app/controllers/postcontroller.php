@@ -70,4 +70,90 @@ public function show(string $slug): void
         'post' => $post
     ]);
 }
+public function toggleStatus(int $id): void
+{
+    $posts = \App\Models\Post::all();
+
+    $currentPost = null;
+    foreach ($posts as $post) {
+        if ($post['id'] == $id) {
+            $currentPost = $post;
+            break;
+        }
+    }
+
+    if (!$currentPost) {
+        http_response_code(404);
+        echo "Article introuvable";
+        return;
+    }
+
+    $newStatus = $currentPost['status'] === 'draft'
+        ? 'published'
+        : 'draft';
+
+    \App\Models\Post::updateStatus($id, $newStatus);
+
+    $_SESSION['success'] = "Statut mis à jour";
+
+    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
+    exit;
+}
+public function edit(int $id): void
+{
+    $post = \App\Models\Post::find($id);
+
+    if (!$post) {
+        http_response_code(404);
+        echo "Article introuvable";
+        return;
+    }
+
+    $this->view('admin/posts/edit', [
+        'post' => $post
+    ]);
+}
+
+public function update(int $id): void
+{
+    $title = trim($_POST['title'] ?? '');
+    $content = trim($_POST['content'] ?? '');
+
+    if (!$title || !$content) {
+        $_SESSION['error'] = "Champs obligatoires manquants";
+        header("Location: /bienvenue-angouleme-blog/public/admin/posts/{$id}/edit");
+        exit;
+    }
+
+    $pdo = \App\Core\Database::getPDO();
+    $slug = \App\Helpers\Slug::generateUnique($pdo, $title);
+
+    \App\Models\Post::update($id, [
+        'title' => $title,
+        'slug' => $slug,
+        'content' => $content
+    ]);
+
+    $_SESSION['success'] = "Article mis à jour";
+
+    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
+    exit;
+}
+public function delete(int $id): void
+{
+    $post = \App\Models\Post::find($id);
+
+    if (!$post) {
+        http_response_code(404);
+        echo "Article introuvable";
+        return;
+    }
+
+    \App\Models\Post::delete($id);
+
+    $_SESSION['success'] = "Article supprimé";
+
+    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
+    exit;
+}
 }
