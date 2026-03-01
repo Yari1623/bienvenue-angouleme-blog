@@ -1,6 +1,6 @@
 <h1>Gestion des articles</h1>
 
-<a href="/admin/posts/create">Créer un article</a>
+<a href="/bienvenue-angouleme-blog/public/admin/posts/create">Créer un article</a>
 
 <?php if (!empty($_SESSION['success'])): ?>
     <p style="color:green;">

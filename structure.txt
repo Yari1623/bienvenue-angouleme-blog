@@ -41,7 +41,10 @@ bienvenue-angouleme-blog
 ├── structure.txt
 └── views
     ├── admin
-    │   └── index.php
+    │   ├── index.php
+    │   └── posts
+    │       ├── create.php
+    │       └── index.php
     ├── auth
     │   └── login.php
     ├── errors

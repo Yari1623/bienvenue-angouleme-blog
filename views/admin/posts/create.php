@@ -6,7 +6,7 @@
     </p>
 <?php endif; ?>
 
-<form method="POST" action="/admin/posts/store">
+<form method="POST" action="/bienvenue-angouleme-blog/public/admin/posts/store">
     <label>Titre :</label><br>
     <input type="text" name="title" required><br><br>
 

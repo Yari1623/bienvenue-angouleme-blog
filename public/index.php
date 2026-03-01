@@ -51,7 +51,10 @@ require_once __DIR__ . '/../config/routes.php';
 */
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Supprime le dossier du projet en local
-$uri = str_replace('/bienvenue-angouleme-blog/public', '', $uri);
+$basePath = '/bienvenue-angouleme-blog/public';
+
+if (str_starts_with($uri, $basePath)) {
+    $uri = substr($uri, strlen($basePath));
+}
 
 $router->dispatch(trim($uri, '/'));
