@@ -6,7 +6,8 @@ bienvenue-angouleme-blog
 │   │   ├── errorcontroller.php
 │   │   ├── homecontroller.php
 │   │   ├── logincontroller.php
-│   │   └── postcontroller.php
+│   │   ├── postcontroller.php
+│   │   └── registercontroller.php
 │   ├── core
 │   │   ├── auth.php
 │   │   ├── autoloader.php
@@ -19,6 +20,7 @@ bienvenue-angouleme-blog
 │   ├── helpers
 │   │   └── slug.php
 │   └── models
+│       ├── comment.php
 │       ├── post.php
 │       └── user.php
 ├── config
@@ -44,12 +46,17 @@ bienvenue-angouleme-blog
     │   ├── index.php
     │   └── posts
     │       ├── create.php
-    │       └── index.php
+    │       ├── edit.php
+    │       ├── index.php
+    │       └── show.php
     ├── auth
-    │   └── login.php
+    │   ├── login.php
+    │   └── register.php
     ├── errors
     │   └── 404.php
     ├── home
     │   └── index.php
-    └── layouts
-        └── main.php
+    ├── layouts
+    │   └── main.php
+    └── posts
+        └── show.php

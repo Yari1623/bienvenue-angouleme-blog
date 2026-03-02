@@ -14,3 +14,7 @@ $router->post('admin/posts/{id}/status', 'PostController@toggleStatus', true, 'a
 $router->get('admin/posts/{id}/edit', 'PostController@edit', true, 'admin');
 $router->post('admin/posts/{id}/update', 'PostController@update', true, 'admin');
 $router->post('admin/posts/{id}/delete', 'PostController@delete', true, 'admin');
+$router->get('/register', 'RegisterController@show');
+$router->post('/register', 'RegisterController@register');
+$router->post('/article/{slug}/comment', 'ArticleController@comment');
+$router->post('/article/{slug}/comment', 'PostController@comment');

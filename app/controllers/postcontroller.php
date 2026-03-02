@@ -4,9 +4,11 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\Post;
-use App\Helpers\Slug;
 use App\Core\Auth;
+use App\Models\Post;
+use App\Models\Comment;
+use App\Helpers\Slug;
+
 class PostController extends Controller
 {
     public function index(): void
@@ -24,136 +26,174 @@ class PostController extends Controller
     }
 
     public function store(): void
-{
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Location: /bienvenue-angouleme-blog/public/admin/posts');
-        exit;
-    }
-
-    $title   = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
-
-    $user = Auth::user();
-    $author = $user['id'] ?? null;
-
-    if (!$title || !$content || !$author) {
-        $_SESSION['error'] = "Champs obligatoires manquants";
-        header('Location: /bienvenue-angouleme-blog/public/admin/posts/create');
-        exit;
-    }
-
-    $pdo  = Database::getPDO();
-    $slug = Slug::generateUnique($pdo, $title);
-
-    Post::create([
-        'title'     => $title,
-        'slug'      => $slug,
-        'content'   => $content,
-        'author_id' => $author
-    ]);
-
-    $_SESSION['success'] = "Article créé avec succès";
-    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
-    exit;
-}
-public function show(string $slug): void
-{
-    $post = \App\Models\Post::findBySlug($slug);
-
-    if (!$post) {
-        http_response_code(404);
-        echo "Article introuvable";
-        return;
-    }
-
-    $this->view('posts/show', [
-        'post' => $post
-    ]);
-}
-public function toggleStatus(int $id): void
-{
-    $posts = \App\Models\Post::all();
-
-    $currentPost = null;
-    foreach ($posts as $post) {
-        if ($post['id'] == $id) {
-            $currentPost = $post;
-            break;
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/admin/posts');
+            exit;
         }
-    }
 
-    if (!$currentPost) {
-        http_response_code(404);
-        echo "Article introuvable";
-        return;
-    }
+        $title   = trim($_POST['title'] ?? '');
+        $content = trim($_POST['content'] ?? '');
 
-    $newStatus = $currentPost['status'] === 'draft'
-        ? 'published'
-        : 'draft';
+        $user = Auth::user();
+        $author = $user['id'] ?? null;
 
-    \App\Models\Post::updateStatus($id, $newStatus);
+        if (!$title || !$content || !$author) {
+            $_SESSION['error'] = "Champs obligatoires manquants";
+            header('Location: ' . BASE_URL . '/admin/posts/create');
+            exit;
+        }
 
-    $_SESSION['success'] = "Statut mis à jour";
+        $pdo  = Database::getPDO();
+        $slug = Slug::generateUnique($pdo, $title);
 
-    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
-    exit;
-}
-public function edit(int $id): void
-{
-    $post = \App\Models\Post::find($id);
+        Post::create([
+            'title'     => $title,
+            'slug'      => $slug,
+            'content'   => $content,
+            'author_id' => $author
+        ]);
 
-    if (!$post) {
-        http_response_code(404);
-        echo "Article introuvable";
-        return;
-    }
-
-    $this->view('admin/posts/edit', [
-        'post' => $post
-    ]);
-}
-
-public function update(int $id): void
-{
-    $title = trim($_POST['title'] ?? '');
-    $content = trim($_POST['content'] ?? '');
-
-    if (!$title || !$content) {
-        $_SESSION['error'] = "Champs obligatoires manquants";
-        header("Location: /bienvenue-angouleme-blog/public/admin/posts/{$id}/edit");
+        $_SESSION['success'] = "Article créé avec succès";
+        header('Location: ' . BASE_URL . '/admin/posts');
         exit;
     }
 
-    $pdo = \App\Core\Database::getPDO();
-    $slug = \App\Helpers\Slug::generateUnique($pdo, $title);
+    public function show(string $slug): void
+    {
+        $post = Post::findBySlug($slug);
 
-    \App\Models\Post::update($id, [
-        'title' => $title,
-        'slug' => $slug,
-        'content' => $content
-    ]);
+        if (!$post) {
+            http_response_code(404);
+            echo "Article introuvable";
+            return;
+        }
 
-    $_SESSION['success'] = "Article mis à jour";
+        $commentModel = new Comment();
+        $comments = $commentModel->getApprovedByPost($post['id']);
 
-    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
-    exit;
-}
-public function delete(int $id): void
-{
-    $post = \App\Models\Post::find($id);
-
-    if (!$post) {
-        http_response_code(404);
-        echo "Article introuvable";
-        return;
+        $this->view('posts/show', [
+            'post' => $post,
+            'comments' => $comments
+        ]);
     }
 
-    \App\Models\Post::delete($id);
+    public function comment(string $slug): void
+    {
+        if (!Auth::check()) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
 
-    $_SESSION['success'] = "Article supprimé";
+        $post = Post::findBySlug($slug);
 
-    header('Location: /bienvenue-angouleme-blog/public/admin/posts');
-    exit;
-}
+        if (!$post) {
+            http_response_code(404);
+            exit;
+        }
+
+        $content = trim($_POST['content'] ?? '');
+
+        if (!$content) {
+            header('Location: ' . BASE_URL . '/article/' . $slug);
+            exit;
+        }
+
+        $commentModel = new Comment();
+
+        $commentModel->create([
+            'post_id' => $post['id'],
+            'user_id' => Auth::user()['id'],
+            'content' => $content
+        ]);
+
+        header('Location: ' . BASE_URL . '/article/' . $slug);
+        exit;
+    }
+
+    public function toggleStatus(int $id): void
+    {
+        $posts = Post::all();
+
+        $currentPost = null;
+        foreach ($posts as $post) {
+            if ($post['id'] == $id) {
+                $currentPost = $post;
+                break;
+            }
+        }
+
+        if (!$currentPost) {
+            http_response_code(404);
+            echo "Article introuvable";
+            return;
+        }
+
+        $newStatus = $currentPost['status'] === 'draft'
+            ? 'published'
+            : 'draft';
+
+        Post::updateStatus($id, $newStatus);
+
+        $_SESSION['success'] = "Statut mis à jour";
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    public function edit(int $id): void
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            http_response_code(404);
+            echo "Article introuvable";
+            return;
+        }
+
+        $this->view('admin/posts/edit', [
+            'post' => $post
+        ]);
+    }
+
+    public function update(int $id): void
+    {
+        $title = trim($_POST['title'] ?? '');
+        $content = trim($_POST['content'] ?? '');
+
+        if (!$title || !$content) {
+            $_SESSION['error'] = "Champs obligatoires manquants";
+            header("Location: " . BASE_URL . "/admin/posts/{$id}/edit");
+            exit;
+        }
+
+        $pdo = Database::getPDO();
+        $slug = Slug::generateUnique($pdo, $title);
+
+        Post::update($id, [
+            'title' => $title,
+            'slug' => $slug,
+            'content' => $content
+        ]);
+
+        $_SESSION['success'] = "Article mis à jour";
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    public function delete(int $id): void
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            http_response_code(404);
+            echo "Article introuvable";
+            return;
+        }
+
+        Post::delete($id);
+
+        $_SESSION['success'] = "Article supprimé";
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
 }

@@ -43,4 +43,19 @@ class Auth
     {
         unset($_SESSION['user_id']);
     }
+    public static function role(): ?string
+    {
+    $user = self::user();
+    return $user['role'] ?? null;
+    }
+
+    public static function isAdmin(): bool
+    {
+    return self::role() === 'admin';
+    }
+
+    public static function isMember(): bool
+    {
+    return self::role() === 'member';
+    }
 }
