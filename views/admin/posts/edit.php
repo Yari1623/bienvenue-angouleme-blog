@@ -3,6 +3,8 @@
 <form method="POST"
       action="/bienvenue-angouleme-blog/public/admin/posts/<?= $post['id'] ?>/update">
 
+<input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+
     <div>
         <label>Titre</label><br>
         <input type="text" name="title"

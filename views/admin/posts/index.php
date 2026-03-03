@@ -30,6 +30,9 @@
     <form method="POST"
           action="/bienvenue-angouleme-blog/public/admin/posts/<?= $post['id'] ?>/status"
           style="display:inline;">
+
+          <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+
         <button type="submit">
             <?= $post['status'] === 'draft' ? 'Publier' : 'Dépublier' ?>
         </button>
@@ -38,6 +41,9 @@
       action="/bienvenue-angouleme-blog/public/admin/posts/<?= $post['id'] ?>/delete"
       style="display:inline;"
       onsubmit="return confirm('Confirmer la suppression ?');">
+
+      <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+      
     <button type="submit" style="color:red;">
         Supprimer
     </button>

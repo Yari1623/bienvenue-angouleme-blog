@@ -2,6 +2,8 @@
 
 <form method="POST" action="/bienvenue-angouleme-blog/public/login" style="max-width:400px;">
     
+<input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+
     <div style="margin-bottom:15px;">
         <label>Email ou username</label><br>
         <input type="text" name="login" required style="width:100%;padding:8px;">

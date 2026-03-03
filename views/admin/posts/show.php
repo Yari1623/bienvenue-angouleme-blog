@@ -29,6 +29,9 @@
 <h4>Laisser un commentaire</h4>
 
 <form method="POST" action="<?= BASE_URL ?>/article/<?= $post['slug'] ?>/comment">
+    
+    <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+
     <textarea name="content" rows="4" required></textarea><br><br>
     <button type="submit">Envoyer</button>
 </form>

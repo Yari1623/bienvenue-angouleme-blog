@@ -1,8 +1,8 @@
 <?php
 
-define('BASE_URL', '/bienvenue-angouleme-blog/public');
-
 declare(strict_types=1);
+
+define('BASE_URL', '/bienvenue-angouleme-blog/public');
 
 /*
 |--------------------------------------------------------------------------

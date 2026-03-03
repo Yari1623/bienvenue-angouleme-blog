@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Database;
 use App\Core\Auth;
+use App\Core\Csrf;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Helpers\Slug;
@@ -27,9 +28,10 @@ class PostController extends Controller
 
     public function store(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_URL . '/admin/posts');
-            exit;
+        // ✅ CSRF
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
         }
 
         $title   = trim($_POST['title'] ?? '');
@@ -80,6 +82,12 @@ class PostController extends Controller
 
     public function comment(string $slug): void
     {
+        // ✅ CSRF
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
         if (!Auth::check()) {
             header('Location: ' . BASE_URL . '/login');
             exit;
@@ -113,23 +121,21 @@ class PostController extends Controller
 
     public function toggleStatus(int $id): void
     {
-        $posts = Post::all();
-
-        $currentPost = null;
-        foreach ($posts as $post) {
-            if ($post['id'] == $id) {
-                $currentPost = $post;
-                break;
-            }
+        // ✅ CSRF
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
         }
 
-        if (!$currentPost) {
+        $post = Post::find($id);
+
+        if (!$post) {
             http_response_code(404);
             echo "Article introuvable";
             return;
         }
 
-        $newStatus = $currentPost['status'] === 'draft'
+        $newStatus = $post['status'] === 'draft'
             ? 'published'
             : 'draft';
 
@@ -157,6 +163,12 @@ class PostController extends Controller
 
     public function update(int $id): void
     {
+        // ✅ CSRF
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
 
@@ -182,6 +194,12 @@ class PostController extends Controller
 
     public function delete(int $id): void
     {
+        // ✅ CSRF
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
         $post = Post::find($id);
 
         if (!$post) {

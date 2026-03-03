@@ -1,6 +1,8 @@
 <h2>Inscription</h2>
 
 <form method="POST" action="/bienvenue-angouleme-blog/public/register">
+    
+    <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
 
     <input type="text" name="username" placeholder="Username *" required><br><br>
 

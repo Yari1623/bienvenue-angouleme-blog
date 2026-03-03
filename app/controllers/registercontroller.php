@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Flash;
+use App\Core\Csrf;
 use App\Models\User;
 
 class RegisterController extends Controller
@@ -15,6 +16,12 @@ class RegisterController extends Controller
 
     public function register(): void
     {
+        // ✅ Vérification CSRF AVANT TOUT
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /bienvenue-angouleme-blog/public/register');
             exit;
@@ -30,7 +37,7 @@ class RegisterController extends Controller
 
         if (!$username || !$firstName || !$lastName || !$email || !$password) {
             Flash::error('Veuillez remplir tous les champs obligatoires.');
-           header('Location: /bienvenue-angouleme-blog/public/register');
+            header('Location: /bienvenue-angouleme-blog/public/register');
             exit;
         }
 
@@ -47,7 +54,6 @@ class RegisterController extends Controller
         }
 
         $userModel = new User();
-
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         try {

@@ -7,6 +7,9 @@
 <?php endif; ?>
 
 <form method="POST" action="/bienvenue-angouleme-blog/public/admin/posts/store">
+
+<input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate(); ?>">
+
     <label>Titre :</label><br>
     <input type="text" name="title" required><br><br>
 
