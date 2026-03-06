@@ -33,7 +33,7 @@ class Post extends Model
                    u.username AS author_name,
                    c.name     AS category_name,
                    pl.name    AS place_name,
-                   (SELECT COUNT(*) FROM likes  WHERE post_id = p.id) AS like_count,
+                   (SELECT COUNT(*) FROM likes      WHERE post_id = p.id) AS like_count,
                    (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
@@ -108,7 +108,7 @@ class Post extends Model
                    u.username AS author_name,
                    c.name     AS category_name,
                    pl.name    AS place_name,
-                   (SELECT COUNT(*) FROM likes     WHERE post_id = p.id) AS like_count,
+                   (SELECT COUNT(*) FROM likes      WHERE post_id = p.id) AS like_count,
                    (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
@@ -265,7 +265,6 @@ class Post extends Model
 
     public function addView(int $postId, ?int $userId, ?string $ip): void
     {
-        // On évite les doublons par user ou par IP
         if ($userId) {
             $check = $this->pdo->prepare("
                 SELECT COUNT(*) FROM post_views WHERE post_id = :post_id AND user_id = :user_id
@@ -328,6 +327,48 @@ class Post extends Model
             ORDER BY month ASC
             LIMIT 12
         ");
+        return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Profil utilisateur
+    // ----------------------------------------------------------
+
+    public function getLikedByUser(int $userId, int $limit = 10): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.id, p.title, p.slug, p.thumbnail, p.created_at,
+                   c.name AS category_name
+            FROM likes l
+            JOIN posts p ON p.id = l.post_id
+            LEFT JOIN categories c ON c.id = p.category_id
+            WHERE l.user_id = :uid AND p.status = 'published'
+            ORDER BY l.created_at DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':uid',   $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit,  \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getViewedByUser(int $userId, int $limit = 6): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.id, p.title, p.slug, p.thumbnail, p.created_at,
+                   c.name AS category_name,
+                   MAX(pv.viewed_at) AS viewed_at
+            FROM post_views pv
+            JOIN posts p ON p.id = pv.post_id
+            LEFT JOIN categories c ON c.id = p.category_id
+            WHERE pv.user_id = :uid AND p.status = 'published'
+            GROUP BY p.id, p.title, p.slug, p.thumbnail, p.created_at, c.name
+            ORDER BY viewed_at DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':uid',   $userId, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit,  \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 }

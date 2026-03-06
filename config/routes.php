@@ -1,7 +1,7 @@
 <?php
 
 // ============================================================
-// Routes publiques
+// Routes publiques — Général
 // ============================================================
 
 $router->get('',                            'HomeController@index');
@@ -13,18 +13,39 @@ $router->post('article/{slug}/comment',     'PostController@comment');
 $router->post('article/{slug}/like',        'PostController@like');
 
 // Catégories
+$router->get('categories',                  'CategoriesController@index');
 $router->get('categorie/{slug}',            'CategoryController@show');
 
 // Agenda / événements
 $router->get('agenda',                      'EventController@index');
 $router->post('agenda/{id}/interest',       'EventController@toggleInterest');
 
+// À propos
+$router->get('a-propos',                    'AboutController@index');
+
+// Contact
+$router->get('contact',                     'ContactController@index');
+$router->post('contact/send',               'ContactController@send');
+
+// Profil (membre connecté)
+$router->get('profil',                      'ProfileController@index',          true);
+
 // Auth
 $router->get('login',                       'LoginController@show');
 $router->post('login',                      'LoginController@login');
 $router->get('logout',                      'LoginController@logout');
+$router->post('logout-beacon',              'LoginController@logoutBeacon');
 $router->get('register',                    'RegisterController@show');
 $router->post('register',                   'RegisterController@register');
+
+// ============================================================
+// Mentions légales & RGPD
+// ============================================================
+
+$router->get('mentions-legales',            'LegalController@mentions');
+$router->get('politique-confidentialite',   'LegalController@privacy');
+$router->get('politique-cookies',           'LegalController@cookies');
+$router->get('rgpd',                        'LegalController@rgpd');
 
 // ============================================================
 // Routes admin — tableau de bord

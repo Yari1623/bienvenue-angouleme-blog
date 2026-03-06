@@ -115,4 +115,18 @@ class Event extends Model
     {
         return (int) $this->pdo->query("SELECT COUNT(*) FROM events")->fetchColumn();
     }
+
+    public function getInterestedByUser(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT e.*
+            FROM event_interests ei
+            JOIN events e ON e.id = ei.event_id
+            WHERE ei.user_id = :uid
+              AND e.event_date >= CURDATE()
+            ORDER BY e.event_date ASC
+        ");
+        $stmt->execute([':uid' => $userId]);
+        return $stmt->fetchAll();
+    }
 }
