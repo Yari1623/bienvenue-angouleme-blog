@@ -11,7 +11,6 @@ class LoginController extends Controller
 {
     public function show(): void
     {
-        // Déjà connecté → redirection
         if (Auth::check()) {
             header('Location: ' . BASE_URL . '/');
             exit;
@@ -38,8 +37,6 @@ class LoginController extends Controller
 
         if (Auth::attempt($login, $password)) {
             Flash::success('Bienvenue !');
-
-            // Redirection selon le rôle
             if (Auth::isAdmin()) {
                 header('Location: ' . BASE_URL . '/admin');
             } else {
@@ -58,6 +55,19 @@ class LoginController extends Controller
         Auth::logout();
         Flash::success('Vous êtes déconnecté.');
         header('Location: ' . BASE_URL . '/');
+        exit;
+    }
+
+    /**
+     * Déconnexion via navigator.sendBeacon (beforeunload)
+     * Pas de redirection — réponse 204 No Content
+     */
+    public function logoutBeacon(): void
+    {
+        if (Auth::check()) {
+            Auth::logout();
+        }
+        http_response_code(204);
         exit;
     }
 }

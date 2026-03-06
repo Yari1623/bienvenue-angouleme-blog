@@ -30,6 +30,11 @@ $router->post('contact/send',               'ContactController@send');
 // Profil (membre connecté)
 $router->get('profil',                      'ProfileController@index',          true);
 
+// Mon compte (modifier infos + mot de passe)
+$router->get('compte',                      'AccountController@show',           true);
+$router->post('compte/update-infos',        'AccountController@updateInfos',    true);
+$router->post('compte/update-password',     'AccountController@updatePassword', true);
+
 // Auth
 $router->get('login',                       'LoginController@show');
 $router->post('login',                      'LoginController@login');
