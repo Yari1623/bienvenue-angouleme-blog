@@ -277,7 +277,7 @@ $isAdmin = Auth::isAdmin();
     <!-- Barre supérieure -->
     <div style="border-bottom:1px solid var(--border)">
         <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-xs" style="color:var(--muted)">
-            <span style="font-family:'Source Sans 3',sans-serif"><?php setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fr'); echo ucfirst(strftime('%A %d %B %Y')); ?></span>
+            <span style="font-family:'Source Sans 3',sans-serif"><?php $jours = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"]; $mois = ["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]; echo $jours[date("N")-1] . " " . date("d") . " " . $mois[(int)date("n")] . " " . date("Y"); ?></span>
             <div class="flex items-center gap-4">
                 <?php if ($user): ?>
                     <span style="color:var(--text2)">
