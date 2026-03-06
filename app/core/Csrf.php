@@ -19,6 +19,13 @@ class Csrf
             return false;
         }
 
-        return hash_equals($_SESSION['_csrf'], $token);
+        $valid = hash_equals($_SESSION['_csrf'], $token);
+
+        if ($valid) {
+            // Rotation du token après chaque validation réussie
+            unset($_SESSION['_csrf']);
+        }
+
+        return $valid;
     }
 }

@@ -6,94 +6,276 @@ use App\Core\Controller;
 use App\Core\Database;
 use App\Core\Auth;
 use App\Core\Csrf;
+use App\Core\Flash;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Category;
+use App\Models\Place;
 use App\Helpers\Slug;
 
 class PostController extends Controller
 {
+    // ----------------------------------------------------------
+    // ADMIN — liste des articles
+    // ----------------------------------------------------------
+
     public function index(): void
     {
-        $posts = Post::all();
+        $postModel = new Post();
+        $posts = $postModel->all();
 
         $this->view('admin/posts/index', [
             'posts' => $posts
         ]);
     }
 
+    // ----------------------------------------------------------
+    // ADMIN — création
+    // ----------------------------------------------------------
+
     public function create(): void
     {
-        $this->view('admin/posts/create');
+        $categoryModel = new Category();
+        $placeModel    = new Place();
+
+        $this->view('admin/posts/create', [
+            'categories' => $categoryModel->all(),
+            'places'     => $placeModel->all(),
+        ]);
     }
 
     public function store(): void
     {
-        // ✅ CSRF
         if (!Csrf::validate($_POST['_csrf'] ?? null)) {
             http_response_code(403);
             exit('Requête invalide (CSRF)');
         }
 
-        $title   = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
+        $title       = trim($_POST['title']        ?? '');
+        $content     = trim($_POST['content']      ?? '');
+        $thumbnail   = trim($_POST['thumbnail']    ?? '');
+        $categoryId  = (int) ($_POST['category_id'] ?? 0) ?: null;
+        $placeId     = (int) ($_POST['place_id']    ?? 0) ?: null;
+        $tags        = trim($_POST['tags']          ?? '');
+        $readingTime = (int) ($_POST['reading_time'] ?? 0) ?: null;
 
-        $user = Auth::user();
-        $author = $user['id'] ?? null;
-
-        if (!$title || !$content || !$author) {
-            $_SESSION['error'] = "Champs obligatoires manquants";
+        if (!$title) {
+            Flash::error('Le titre est obligatoire.');
             header('Location: ' . BASE_URL . '/admin/posts/create');
             exit;
         }
 
-        $pdo  = Database::getPDO();
-        $slug = Slug::generateUnique($pdo, $title);
+        $pdo       = Database::getPDO();
+        $slug      = Slug::generateUnique($pdo, $title);
+        $postModel = new Post();
 
-        Post::create([
-            'title'     => $title,
-            'slug'      => $slug,
-            'content'   => $content,
-            'author_id' => $author
+        $postId = $postModel->create([
+            'title'        => $title,
+            'slug'         => $slug,
+            'content'      => $content,
+            'thumbnail'    => $thumbnail ?: null,
+            'author_id'    => Auth::id(),
+            'category_id'  => $categoryId,
+            'place_id'     => $placeId,
+            'tags'         => $tags ?: null,
+            'reading_time' => $readingTime,
         ]);
 
-        $_SESSION['success'] = "Article créé avec succès";
+        // Sections dynamiques
+        $this->storeSections($postModel, $postId);
+
+        Flash::success('Article créé avec succès.');
         header('Location: ' . BASE_URL . '/admin/posts');
         exit;
     }
 
-    public function show(string $slug): void
+    // ----------------------------------------------------------
+    // ADMIN — édition
+    // ----------------------------------------------------------
+
+    public function edit(int $id): void
     {
-        $post = Post::findBySlug($slug);
+        $postModel     = new Post();
+        $categoryModel = new Category();
+        $placeModel    = new Place();
+
+        $post = $postModel->find($id);
 
         if (!$post) {
-            http_response_code(404);
-            echo "Article introuvable";
-            return;
+            Flash::error('Article introuvable.');
+            header('Location: ' . BASE_URL . '/admin/posts');
+            exit;
         }
 
-        $commentModel = new Comment();
-        $comments = $commentModel->getApprovedByPost($post['id']);
+        $sections = $postModel->getSections($id);
 
-        $this->view('posts/show', [
-            'post' => $post,
-            'comments' => $comments
+        $this->view('admin/posts/edit', [
+            'post'       => $post,
+            'sections'   => $sections,
+            'categories' => $categoryModel->all(),
+            'places'     => $placeModel->all(),
         ]);
     }
 
+    public function update(int $id): void
+    {
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
+        $postModel = new Post();
+        $post      = $postModel->find($id);
+
+        if (!$post) {
+            Flash::error('Article introuvable.');
+            header('Location: ' . BASE_URL . '/admin/posts');
+            exit;
+        }
+
+        $title       = trim($_POST['title']         ?? '');
+        $content     = trim($_POST['content']       ?? '');
+        $thumbnail   = trim($_POST['thumbnail']     ?? '');
+        $categoryId  = (int) ($_POST['category_id'] ?? 0) ?: null;
+        $placeId     = (int) ($_POST['place_id']    ?? 0) ?: null;
+        $tags        = trim($_POST['tags']           ?? '');
+        $readingTime = (int) ($_POST['reading_time'] ?? 0) ?: null;
+
+        if (!$title) {
+            Flash::error('Le titre est obligatoire.');
+            header('Location: ' . BASE_URL . '/admin/posts/' . $id . '/edit');
+            exit;
+        }
+
+        $postModel->update($id, [
+            'title'        => $title,
+            'content'      => $content,
+            'thumbnail'    => $thumbnail ?: null,
+            'category_id'  => $categoryId,
+            'place_id'     => $placeId,
+            'tags'         => $tags ?: null,
+            'reading_time' => $readingTime,
+        ]);
+
+        // Réécriture des sections
+        $postModel->deleteSections($id);
+        $this->storeSections($postModel, $id);
+
+        Flash::success('Article mis à jour.');
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    // ----------------------------------------------------------
+    // ADMIN — toggle statut & suppression
+    // ----------------------------------------------------------
+
+    public function toggleStatus(int $id): void
+    {
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
+        $postModel = new Post();
+        $post      = $postModel->find($id);
+
+        if (!$post) {
+            Flash::error('Article introuvable.');
+            header('Location: ' . BASE_URL . '/admin/posts');
+            exit;
+        }
+
+        $newStatus = $post['status'] === 'draft' ? 'published' : 'draft';
+        $postModel->updateStatus($id, $newStatus);
+
+        $label = $newStatus === 'published' ? 'publié' : 'repassé en brouillon';
+        Flash::success("Article {$label}.");
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    public function delete(int $id): void
+    {
+        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
+            http_response_code(403);
+            exit('Requête invalide (CSRF)');
+        }
+
+        $postModel = new Post();
+
+        if (!$postModel->find($id)) {
+            Flash::error('Article introuvable.');
+            header('Location: ' . BASE_URL . '/admin/posts');
+            exit;
+        }
+
+        $postModel->delete($id);
+
+        Flash::success('Article supprimé.');
+        header('Location: ' . BASE_URL . '/admin/posts');
+        exit;
+    }
+
+    // ----------------------------------------------------------
+    // PUBLIC — affichage d'un article
+    // ----------------------------------------------------------
+
+    public function show(string $slug): void
+    {
+        $postModel = new Post();
+        $post      = $postModel->findBySlug($slug);
+
+        if (!$post) {
+            http_response_code(404);
+            $error = new ErrorController();
+            $error->notFound();
+            return;
+        }
+
+        // Enregistrement de la vue
+        $postModel->addView(
+            $post['id'],
+            Auth::id(),
+            $_SERVER['REMOTE_ADDR'] ?? null
+        );
+
+        $sections     = $postModel->getSections($post['id']);
+        $commentModel = new Comment();
+        $comments     = $commentModel->getApprovedByPost($post['id']);
+
+        // Like de l'utilisateur courant
+        $userHasLiked = Auth::check()
+            ? $postModel->hasLiked($post['id'], Auth::id())
+            : false;
+
+        $this->view('posts/show', [
+            'post'         => $post,
+            'sections'     => $sections,
+            'comments'     => $comments,
+            'userHasLiked' => $userHasLiked,
+        ]);
+    }
+
+    // ----------------------------------------------------------
+    // PUBLIC — commentaire
+    // ----------------------------------------------------------
+
     public function comment(string $slug): void
     {
-        // ✅ CSRF
         if (!Csrf::validate($_POST['_csrf'] ?? null)) {
             http_response_code(403);
             exit('Requête invalide (CSRF)');
         }
 
         if (!Auth::check()) {
+            Flash::error('Vous devez être connecté pour commenter.');
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
 
-        $post = Post::findBySlug($slug);
+        $postModel = new Post();
+        $post      = $postModel->findBySlug($slug);
 
         if (!$post) {
             http_response_code(404);
@@ -103,115 +285,78 @@ class PostController extends Controller
         $content = trim($_POST['content'] ?? '');
 
         if (!$content) {
+            Flash::error('Le commentaire ne peut pas être vide.');
             header('Location: ' . BASE_URL . '/article/' . $slug);
             exit;
         }
 
         $commentModel = new Comment();
-
         $commentModel->create([
             'post_id' => $post['id'],
-            'user_id' => Auth::user()['id'],
-            'content' => $content
+            'user_id' => Auth::id(),
+            'content' => $content,
         ]);
+
+        Flash::success('Commentaire envoyé, en attente de modération.');
+        header('Location: ' . BASE_URL . '/article/' . $slug);
+        exit;
+    }
+
+    // ----------------------------------------------------------
+    // PUBLIC — like (toggle)
+    // ----------------------------------------------------------
+
+    public function like(string $slug): void
+    {
+        if (!Auth::check()) {
+            header('Location: ' . BASE_URL . '/login');
+            exit;
+        }
+
+        $postModel = new Post();
+        $post      = $postModel->findBySlug($slug);
+
+        if (!$post) {
+            http_response_code(404);
+            exit;
+        }
+
+        $userId = Auth::id();
+
+        if ($postModel->hasLiked($post['id'], $userId)) {
+            $postModel->removeLike($post['id'], $userId);
+        } else {
+            $postModel->addLike($post['id'], $userId);
+        }
 
         header('Location: ' . BASE_URL . '/article/' . $slug);
         exit;
     }
 
-    public function toggleStatus(int $id): void
+    // ----------------------------------------------------------
+    // Méthode privée — enregistrement des sections
+    // ----------------------------------------------------------
+
+    private function storeSections(Post $postModel, int $postId): void
     {
-        // ✅ CSRF
-        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
-            http_response_code(403);
-            exit('Requête invalide (CSRF)');
+        $types     = $_POST['section_type']      ?? [];
+        $contents  = $_POST['section_content']   ?? [];
+        $mediaUrls = $_POST['section_media_url'] ?? [];
+
+        foreach ($types as $i => $type) {
+            $type     = trim($type);
+            $content  = trim($contents[$i]  ?? '');
+            $mediaUrl = trim($mediaUrls[$i] ?? '');
+
+            if (!$type) continue;
+
+            $postModel->addSection(
+                $postId,
+                $type,
+                $content  ?: null,
+                $mediaUrl ?: null,
+                $i
+            );
         }
-
-        $post = Post::find($id);
-
-        if (!$post) {
-            http_response_code(404);
-            echo "Article introuvable";
-            return;
-        }
-
-        $newStatus = $post['status'] === 'draft'
-            ? 'published'
-            : 'draft';
-
-        Post::updateStatus($id, $newStatus);
-
-        $_SESSION['success'] = "Statut mis à jour";
-        header('Location: ' . BASE_URL . '/admin/posts');
-        exit;
-    }
-
-    public function edit(int $id): void
-    {
-        $post = Post::find($id);
-
-        if (!$post) {
-            http_response_code(404);
-            echo "Article introuvable";
-            return;
-        }
-
-        $this->view('admin/posts/edit', [
-            'post' => $post
-        ]);
-    }
-
-    public function update(int $id): void
-    {
-        // ✅ CSRF
-        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
-            http_response_code(403);
-            exit('Requête invalide (CSRF)');
-        }
-
-        $title = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
-
-        if (!$title || !$content) {
-            $_SESSION['error'] = "Champs obligatoires manquants";
-            header("Location: " . BASE_URL . "/admin/posts/{$id}/edit");
-            exit;
-        }
-
-        $pdo = Database::getPDO();
-        $slug = Slug::generateUnique($pdo, $title);
-
-        Post::update($id, [
-            'title' => $title,
-            'slug' => $slug,
-            'content' => $content
-        ]);
-
-        $_SESSION['success'] = "Article mis à jour";
-        header('Location: ' . BASE_URL . '/admin/posts');
-        exit;
-    }
-
-    public function delete(int $id): void
-    {
-        // ✅ CSRF
-        if (!Csrf::validate($_POST['_csrf'] ?? null)) {
-            http_response_code(403);
-            exit('Requête invalide (CSRF)');
-        }
-
-        $post = Post::find($id);
-
-        if (!$post) {
-            http_response_code(404);
-            echo "Article introuvable";
-            return;
-        }
-
-        Post::delete($id);
-
-        $_SESSION['success'] = "Article supprimé";
-        header('Location: ' . BASE_URL . '/admin/posts');
-        exit;
     }
 }

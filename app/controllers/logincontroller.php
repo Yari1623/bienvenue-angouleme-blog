@@ -11,36 +11,53 @@ class LoginController extends Controller
 {
     public function show(): void
     {
+        // Déjà connecté → redirection
+        if (Auth::check()) {
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
+
         $this->view('auth/login');
     }
 
     public function login(): void
     {
-        // ✅ Vérification CSRF AVANT TOUT
         if (!Csrf::validate($_POST['_csrf'] ?? null)) {
             http_response_code(403);
             exit('Requête invalide (CSRF)');
         }
 
-        $login = $_POST['login'] ?? '';
+        $login    = trim($_POST['login']    ?? '');
         $password = $_POST['password'] ?? '';
 
-        if (Auth::attempt($login, $password)) {
-            Flash::success('Connexion réussie');
-            header('Location: /bienvenue-angouleme-blog/public');
+        if (!$login || !$password) {
+            Flash::error('Veuillez remplir tous les champs.');
+            header('Location: ' . BASE_URL . '/login');
             exit;
         }
 
-        Flash::error('Identifiants incorrects');
-        header('Location: /bienvenue-angouleme-blog/public/login');
+        if (Auth::attempt($login, $password)) {
+            Flash::success('Bienvenue !');
+
+            // Redirection selon le rôle
+            if (Auth::isAdmin()) {
+                header('Location: ' . BASE_URL . '/admin');
+            } else {
+                header('Location: ' . BASE_URL . '/');
+            }
+            exit;
+        }
+
+        Flash::error('Identifiants incorrects.');
+        header('Location: ' . BASE_URL . '/login');
         exit;
     }
 
     public function logout(): void
     {
         Auth::logout();
-        Flash::success('Déconnexion réussie');
-        header('Location: /bienvenue-angouleme-blog/public');
+        Flash::success('Vous êtes déconnecté.');
+        header('Location: ' . BASE_URL . '/');
         exit;
     }
 }

@@ -2,113 +2,332 @@
 
 namespace App\Models;
 
-use App\Core\Database;
-use PDO;
+use App\Core\Model;
 
-class Post
+class Post extends Model
 {
-    public static function all(): array
+    // ----------------------------------------------------------
+    // Lecture — liste
+    // ----------------------------------------------------------
+
+    public function all(): array
     {
-        $pdo = Database::getPDO();
-        $stmt = $pdo->query("SELECT * FROM posts ORDER BY created_at DESC");
+        $stmt = $this->pdo->query("
+            SELECT p.*,
+                   u.username AS author_name,
+                   c.name     AS category_name,
+                   pl.name    AS place_name
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            ORDER BY p.created_at DESC
+        ");
         return $stmt->fetchAll();
     }
 
-    public static function published(): array
+    public function published(int $limit = 10, int $offset = 0): array
     {
-        $pdo = Database::getPDO();
-        $stmt = $pdo->prepare("
-            SELECT * FROM posts
-            WHERE status = 'published'
-            ORDER BY created_at DESC
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username AS author_name,
+                   c.name     AS category_name,
+                   pl.name    AS place_name,
+                   (SELECT COUNT(*) FROM likes  WHERE post_id = p.id) AS like_count,
+                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE p.status = 'published'
+            ORDER BY p.created_at DESC
+            LIMIT :limit OFFSET :offset
         ");
+        $stmt->bindValue(':limit',  $limit,  \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
-    public static function find(int $id): ?array
+    public function countPublished(): int
     {
-        $pdo = Database::getPDO();
-        $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id LIMIT 1");
-        $stmt->execute(['id' => $id]);
-        $post = $stmt->fetch();
-
-        return $post ?: null;
+        return (int) $this->pdo->query("
+            SELECT COUNT(*) FROM posts WHERE status = 'published'
+        ")->fetchColumn();
     }
 
-    public static function findBySlug(string $slug): ?array
+    public function byCategory(int $categoryId, int $limit = 10, int $offset = 0): array
     {
-        $pdo = Database::getPDO();
-        $stmt = $pdo->prepare("
-            SELECT * FROM posts
-            WHERE slug = :slug
-            AND status = 'published'
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username AS author_name,
+                   c.name     AS category_name,
+                   pl.name    AS place_name
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE p.status = 'published'
+              AND p.category_id = :category_id
+            ORDER BY p.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindValue(':category_id', $categoryId, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit',       $limit,      \PDO::PARAM_INT);
+        $stmt->bindValue(':offset',      $offset,     \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Lecture — article unique
+    // ----------------------------------------------------------
+
+    public function find(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username AS author_name,
+                   c.name     AS category_name,
+                   pl.name    AS place_name
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE p.id = :id
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function findBySlug(string $slug): ?array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username AS author_name,
+                   c.name     AS category_name,
+                   pl.name    AS place_name,
+                   (SELECT COUNT(*) FROM likes     WHERE post_id = p.id) AS like_count,
+                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE p.slug = :slug
+              AND p.status = 'published'
             LIMIT 1
         ");
         $stmt->execute(['slug' => $slug]);
-        $post = $stmt->fetch();
-
-        return $post ?: null;
+        return $stmt->fetch() ?: null;
     }
 
-    public static function update(int $id, array $data): void
-    {
-        $pdo = Database::getPDO();
+    // ----------------------------------------------------------
+    // CRUD
+    // ----------------------------------------------------------
 
-        $stmt = $pdo->prepare("
+    public function create(array $data): int
+    {
+        $stmt = $this->pdo->prepare("
+            INSERT INTO posts
+                (title, slug, content, thumbnail, author_id, category_id, place_id, tags, reading_time, status)
+            VALUES
+                (:title, :slug, :content, :thumbnail, :author_id, :category_id, :place_id, :tags, :reading_time, 'draft')
+        ");
+        $stmt->execute([
+            'title'        => $data['title'],
+            'slug'         => $data['slug'],
+            'content'      => $data['content'] ?? '',
+            'thumbnail'    => $data['thumbnail'] ?? null,
+            'author_id'    => $data['author_id'],
+            'category_id'  => $data['category_id'] ?? null,
+            'place_id'     => $data['place_id'] ?? null,
+            'tags'         => $data['tags'] ?? null,
+            'reading_time' => $data['reading_time'] ?? null,
+        ]);
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function update(int $id, array $data): void
+    {
+        $stmt = $this->pdo->prepare("
             UPDATE posts
-            SET title = :title,
-                slug = :slug,
-                content = :content
+            SET title        = :title,
+                content      = :content,
+                thumbnail    = :thumbnail,
+                category_id  = :category_id,
+                place_id     = :place_id,
+                tags         = :tags,
+                reading_time = :reading_time
             WHERE id = :id
         ");
-
         $stmt->execute([
-            'title' => $data['title'],
-            'slug' => $data['slug'],
-            'content' => $data['content'],
-            'id' => $id
+            'title'        => $data['title'],
+            'content'      => $data['content'] ?? '',
+            'thumbnail'    => $data['thumbnail'] ?? null,
+            'category_id'  => $data['category_id'] ?? null,
+            'place_id'     => $data['place_id'] ?? null,
+            'tags'         => $data['tags'] ?? null,
+            'reading_time' => $data['reading_time'] ?? null,
+            'id'           => $id,
         ]);
     }
 
-    public static function updateStatus(int $id, string $status): void
+    public function updateStatus(int $id, string $status): void
     {
-        $pdo = Database::getPDO();
-
-        $stmt = $pdo->prepare("
-            UPDATE posts
-            SET status = :status
-            WHERE id = :id
+        $stmt = $this->pdo->prepare("
+            UPDATE posts SET status = :status WHERE id = :id
         ");
+        $stmt->execute(['status' => $status, 'id' => $id]);
+    }
 
+    public function delete(int $id): void
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM posts WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+    }
+
+    // ----------------------------------------------------------
+    // Sections (éditeur par blocs)
+    // ----------------------------------------------------------
+
+    public function getSections(int $postId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM post_sections
+            WHERE post_id = :post_id
+            ORDER BY position ASC
+        ");
+        $stmt->execute(['post_id' => $postId]);
+        return $stmt->fetchAll();
+    }
+
+    public function addSection(int $postId, string $type, ?string $content, ?string $mediaUrl, int $position): void
+    {
+        $stmt = $this->pdo->prepare("
+            INSERT INTO post_sections (post_id, type, content, media_url, position)
+            VALUES (:post_id, :type, :content, :media_url, :position)
+        ");
         $stmt->execute([
-            'status' => $status,
-            'id' => $id
+            'post_id'   => $postId,
+            'type'      => $type,
+            'content'   => $content,
+            'media_url' => $mediaUrl,
+            'position'  => $position,
         ]);
     }
 
-    public static function create(array $data): void
+    public function deleteSections(int $postId): void
     {
-        $pdo = Database::getPDO();
-
-        $stmt = $pdo->prepare("
-            INSERT INTO posts (title, slug, content, author_id, status)
-            VALUES (:title, :slug, :content, :author_id, 'draft')
-        ");
-
-        $stmt->execute($data);
+        $stmt = $this->pdo->prepare("DELETE FROM post_sections WHERE post_id = :post_id");
+        $stmt->execute(['post_id' => $postId]);
     }
-    public static function delete(int $id): void
-{
-    $pdo = Database::getPDO();
 
-    $stmt = $pdo->prepare("
-        DELETE FROM posts
-        WHERE id = :id
-    ");
+    // ----------------------------------------------------------
+    // Likes
+    // ----------------------------------------------------------
 
-    $stmt->execute([
-        'id' => $id
-    ]);
-}
+    public function hasLiked(int $postId, int $userId): bool
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) FROM likes WHERE post_id = :post_id AND user_id = :user_id
+        ");
+        $stmt->execute(['post_id' => $postId, 'user_id' => $userId]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function addLike(int $postId, int $userId): void
+    {
+        $stmt = $this->pdo->prepare("
+            INSERT IGNORE INTO likes (post_id, user_id) VALUES (:post_id, :user_id)
+        ");
+        $stmt->execute(['post_id' => $postId, 'user_id' => $userId]);
+    }
+
+    public function removeLike(int $postId, int $userId): void
+    {
+        $stmt = $this->pdo->prepare("
+            DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id
+        ");
+        $stmt->execute(['post_id' => $postId, 'user_id' => $userId]);
+    }
+
+    public function getLikeCount(int $postId): int
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
+        $stmt->execute(['post_id' => $postId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    // ----------------------------------------------------------
+    // Vues
+    // ----------------------------------------------------------
+
+    public function addView(int $postId, ?int $userId, ?string $ip): void
+    {
+        // On évite les doublons par user ou par IP
+        if ($userId) {
+            $check = $this->pdo->prepare("
+                SELECT COUNT(*) FROM post_views WHERE post_id = :post_id AND user_id = :user_id
+            ");
+            $check->execute(['post_id' => $postId, 'user_id' => $userId]);
+            if ((int) $check->fetchColumn() > 0) return;
+        }
+
+        $stmt = $this->pdo->prepare("
+            INSERT INTO post_views (post_id, user_id, ip_address)
+            VALUES (:post_id, :user_id, :ip_address)
+        ");
+        $stmt->execute([
+            'post_id'    => $postId,
+            'user_id'    => $userId,
+            'ip_address' => $ip,
+        ]);
+    }
+
+    // ----------------------------------------------------------
+    // Stats dashboard
+    // ----------------------------------------------------------
+
+    public function count(): int
+    {
+        return (int) $this->pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn();
+    }
+
+    public function countByStatus(string $status): int
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM posts WHERE status = :status");
+        $stmt->execute(['status' => $status]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function getPopular(int $limit = 5): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.id, p.title, p.slug,
+                   COUNT(pv.id) AS view_count
+            FROM posts p
+            LEFT JOIN post_views pv ON pv.post_id = p.id
+            WHERE p.status = 'published'
+            GROUP BY p.id
+            ORDER BY view_count DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getPostsPerMonth(): array
+    {
+        $stmt = $this->pdo->query("
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS month,
+                   COUNT(*) AS total
+            FROM posts
+            GROUP BY month
+            ORDER BY month ASC
+            LIMIT 12
+        ");
+        return $stmt->fetchAll();
+    }
 }
