@@ -17,7 +17,7 @@ class AccountController extends Controller
             header('Location: ' . BASE_URL . '/login');
             exit;
         }
-        $this->view('profile/edit');
+        $this->view('profil/edit');
     }
 
     public function updateInfos(): void

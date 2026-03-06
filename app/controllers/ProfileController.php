@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $interestedEvents = $eventModel->getInterestedByUser($userId);
         $userComments     = $this->getCommentCount($userId);
 
-        $this->view('profile/index', [
+        $this->view('profil/index', [
             'userLikes'        => $userLikes,
             'recentViews'      => $recentViews,
             'interestedEvents' => $interestedEvents,
@@ -49,6 +49,20 @@ class ProfileController extends Controller
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
