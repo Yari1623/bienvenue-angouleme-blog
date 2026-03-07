@@ -439,23 +439,38 @@ $isAdmin = Auth::isAdmin();
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text" style="font-family:'Source Sans 3',sans-serif;">Suivez-nous</h4>
                 <div class="flex flex-wrap gap-3">
-                    <?php
-                    $socials = [
-                        ['name'=>'Facebook',  'icon'=>'f', 'url'=>'#', 'color'=>'#1877f2'],
-                        ['name'=>'Instagram', 'icon'=>'📷','url'=>'#', 'color'=>'#e1306c'],
-                        ['name'=>'TikTok',    'icon'=>'♪', 'url'=>'#', 'color'=>'#010101'],
-                        ['name'=>'YouTube',   'icon'=>'▶', 'url'=>'#', 'color'=>'#ff0000'],
-                    ];
-                    foreach($socials as $s): ?>
-                    <a href="<?= $s['url'] ?>"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       title="<?= $s['name'] ?>"
-                       class="flex items-center justify-center w-10 h-10 rounded-full text-white font-bold text-sm transition-all hover:scale-110 hover:shadow-lg"
-                       style="background:<?= $s['color'] ?>">
-                        <?= $s['icon'] ?>
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook"
+                       class="transition-all hover:scale-110 hover:shadow-lg"
+                       style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
+                        <img src="<?= BASE_URL ?>/assets/icones/Facebook.png"
+                             alt="Suivez-nous sur Facebook"
+                             style="width:100%;height:100%;object-fit:cover;">
                     </a>
-                    <?php endforeach; ?>
+                    <!-- Instagram -->
+                    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram"
+                       class="transition-all hover:scale-110 hover:shadow-lg"
+                       style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
+                        <img src="<?= BASE_URL ?>/assets/icones/Instagram.png"
+                             alt="Suivez-nous sur Instagram"
+                             style="width:100%;height:100%;object-fit:cover;">
+                    </a>
+                    <!-- TikTok -->
+                    <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" title="TikTok"
+                       class="transition-all hover:scale-110 hover:shadow-lg"
+                       style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
+                        <img src="<?= BASE_URL ?>/assets/icones/TikTok.png"
+                             alt="Suivez-nous sur TikTok"
+                             style="width:100%;height:100%;object-fit:cover;">
+                    </a>
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" title="YouTube"
+                       class="transition-all hover:scale-110 hover:shadow-lg"
+                       style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
+                        <img src="<?= BASE_URL ?>/assets/icones/YouTube.png"
+                             alt="Suivez-nous sur YouTube"
+                             style="width:100%;height:100%;object-fit:cover;">
+                    </a>
                 </div>
                 <p class="text-xs mt-4" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
                     Rejoignez notre communauté locale !

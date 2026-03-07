@@ -6,40 +6,63 @@ use App\Core\Controller;
 use App\Models\Category;
 use App\Models\Event;
 use App\Models\Post;
+use App\Core\Database;
 
 class HomeController extends Controller
 {
     public function index(): void
     {
-        $postModel     = new Post();
-        $categoryModel = new Category();
-        $eventModel    = new Event();
+        $postModel  = new Post();
+        $eventModel = new Event();
 
-        // ── Sélecteur 6 / 12 articles par page
-        $perPageAllowed = [6, 12];
-        $perPage = isset($_GET['per_page']) && in_array((int)$_GET['per_page'], $perPageAllowed)
-            ? (int)$_GET['per_page']
-            : 6;
+        // 3 derniers articles publiés
+        $latestPosts = $postModel->published(3, 0);
 
-        // ── Page courante
-        $currentPage = max(1, (int)($_GET['page'] ?? 1));
-        $offset      = ($currentPage - 1) * $perPage;
+        // 3 articles les plus lus
+        $popularPosts = $postModel->getPopular(3);
 
-        // ── Données
-        $posts      = $postModel->published($perPage, $offset);
-        $total      = $postModel->countPublished();
-        $totalPages = (int) ceil($total / $perPage);
-        $categories = $categoryModel->all();
-        $upcomingEvents = $eventModel->upcoming(3);
+        // 3 articles les plus commentés
+        $mostCommented = $postModel->getMostCommented(3);
+
+        // Stats pour le hero
+        $totalPosts   = $postModel->countPublished();
+        $totalEvents  = $eventModel->count();
+        $totalMembers = $this->getMemberCount();
 
         $this->view('home/index', [
-            'posts'          => $posts,
-            'categories'     => $categories,
-            'upcomingEvents' => $upcomingEvents,
-            'currentPage'    => $currentPage,
-            'totalPages'     => $totalPages,
-            'total'          => $total,
-            'perPage'        => $perPage,
+            'latestPosts'   => $latestPosts,
+            'popularPosts'  => $popularPosts,
+            'mostCommented' => $mostCommented,
+            'totalPosts'    => $totalPosts,
+            'totalEvents'   => $totalEvents,
+            'totalMembers'  => $totalMembers,
         ]);
     }
+
+    private function getMemberCount(): int
+    {
+        try {
+            $pdo  = Database::getPDO();
+            $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role != 'admin'");
+            return (int) $stmt->fetchColumn();
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

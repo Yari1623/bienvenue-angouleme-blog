@@ -16,6 +16,7 @@ class Post extends Model
             SELECT p.*,
                    u.username AS author_name,
                    c.name     AS category_name,
+                   c.slug     AS category_slug,
                    pl.name    AS place_name
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
@@ -32,9 +33,11 @@ class Post extends Model
             SELECT p.*,
                    u.username AS author_name,
                    c.name     AS category_name,
+                   c.slug     AS category_slug,
                    pl.name    AS place_name,
                    (SELECT COUNT(*) FROM likes      WHERE post_id = p.id) AS like_count,
-                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
+                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count,
+                   (SELECT COUNT(*) FROM comments   WHERE post_id = p.id AND status = 'approved') AS comment_count
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
             LEFT JOIN categories c  ON p.category_id = c.id
@@ -62,6 +65,7 @@ class Post extends Model
             SELECT p.*,
                    u.username AS author_name,
                    c.name     AS category_name,
+                   c.slug     AS category_slug,
                    pl.name    AS place_name
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
@@ -89,6 +93,7 @@ class Post extends Model
             SELECT p.*,
                    u.username AS author_name,
                    c.name     AS category_name,
+                   c.slug     AS category_slug,
                    pl.name    AS place_name
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
@@ -107,9 +112,11 @@ class Post extends Model
             SELECT p.*,
                    u.username AS author_name,
                    c.name     AS category_name,
+                   c.slug     AS category_slug,
                    pl.name    AS place_name,
                    (SELECT COUNT(*) FROM likes      WHERE post_id = p.id) AS like_count,
-                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count
+                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count,
+                   (SELECT COUNT(*) FROM comments   WHERE post_id = p.id AND status = 'approved') AS comment_count
             FROM posts p
             LEFT JOIN users      u  ON p.author_id   = u.id
             LEFT JOIN categories c  ON p.category_id = c.id
@@ -300,23 +307,6 @@ class Post extends Model
         return (int) $stmt->fetchColumn();
     }
 
-    public function getPopular(int $limit = 5): array
-    {
-        $stmt = $this->pdo->prepare("
-            SELECT p.id, p.title, p.slug,
-                   COUNT(pv.id) AS view_count
-            FROM posts p
-            LEFT JOIN post_views pv ON pv.post_id = p.id
-            WHERE p.status = 'published'
-            GROUP BY p.id
-            ORDER BY view_count DESC
-            LIMIT :limit
-        ");
-        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
     public function getPostsPerMonth(): array
     {
         $stmt = $this->pdo->query("
@@ -328,6 +318,181 @@ class Post extends Model
             LIMIT 12
         ");
         return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Articles populaires (les plus lus)
+    // ----------------------------------------------------------
+
+    public function getPopular(int $limit = 5): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username  AS author_name,
+                   c.name      AS category_name,
+                   c.slug      AS category_slug,
+                   pl.name     AS place_name,
+                   COUNT(DISTINCT pv.id) AS view_count,
+                   COUNT(DISTINCT cm.id) AS comment_count
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            LEFT JOIN post_views pv ON pv.post_id    = p.id
+            LEFT JOIN comments   cm ON cm.post_id    = p.id AND cm.status = 'approved'
+            WHERE p.status = 'published'
+            GROUP BY p.id
+            ORDER BY view_count DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Articles les plus commentés
+    // ----------------------------------------------------------
+
+    public function getMostCommented(int $limit = 3): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username  AS author_name,
+                   c.name      AS category_name,
+                   c.slug      AS category_slug,
+                   pl.name     AS place_name,
+                   COUNT(cm.id) AS comment_count
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            LEFT JOIN comments   cm ON cm.post_id    = p.id AND cm.status = 'approved'
+            WHERE p.status = 'published'
+            GROUP BY p.id
+            ORDER BY comment_count DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Recherche avec filtres (page Blog)
+    // ----------------------------------------------------------
+
+    public function search(
+        string $q         = '',
+        string $catSlug   = '',
+        string $placeSlug = '',
+        string $tag       = '',
+        string $sort      = 'date_desc',
+        int    $limit     = 6,
+        int    $offset    = 0
+    ): array {
+        $where  = ["p.status = 'published'"];
+        $params = [];
+
+        if ($q) {
+            $where[]       = "(p.title LIKE :q OR p.content LIKE :q2)";
+            $params[':q']  = '%' . $q . '%';
+            $params[':q2'] = '%' . $q . '%';
+        }
+        if ($catSlug) {
+            $where[]        = "c.slug = :cat";
+            $params[':cat'] = $catSlug;
+        }
+        if ($placeSlug) {
+            $where[]          = "pl.slug = :place";
+            $params[':place'] = $placeSlug;
+        }
+        if ($tag) {
+            $where[]        = "p.tags LIKE :tag";
+            $params[':tag'] = '%' . $tag . '%';
+        }
+
+        $orderBy = match($sort) {
+            'date_asc' => 'p.created_at ASC',
+            'vues'     => 'view_count DESC',
+            'comments' => 'comment_count DESC',
+            default    => 'p.created_at DESC',
+        };
+
+        $whereStr = implode(' AND ', $where);
+
+        $stmt = $this->pdo->prepare("
+            SELECT p.*,
+                   u.username  AS author_name,
+                   c.name      AS category_name,
+                   c.slug      AS category_slug,
+                   pl.name     AS place_name,
+                   (SELECT COUNT(*) FROM likes      WHERE post_id = p.id) AS like_count,
+                   (SELECT COUNT(*) FROM post_views WHERE post_id = p.id) AS view_count,
+                   (SELECT COUNT(*) FROM comments   WHERE post_id = p.id AND status = 'approved') AS comment_count
+            FROM posts p
+            LEFT JOIN users      u  ON p.author_id   = u.id
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE {$whereStr}
+            ORDER BY {$orderBy}
+            LIMIT :limit OFFSET :offset
+        ");
+
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue(':limit',  $limit,  \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // ----------------------------------------------------------
+    // Compter les résultats de recherche (pagination blog)
+    // ----------------------------------------------------------
+
+    public function countSearch(
+        string $q         = '',
+        string $catSlug   = '',
+        string $placeSlug = '',
+        string $tag       = ''
+    ): int {
+        $where  = ["p.status = 'published'"];
+        $params = [];
+
+        if ($q) {
+            $where[]       = "(p.title LIKE :q OR p.content LIKE :q2)";
+            $params[':q']  = '%' . $q . '%';
+            $params[':q2'] = '%' . $q . '%';
+        }
+        if ($catSlug) {
+            $where[]        = "c.slug = :cat";
+            $params[':cat'] = $catSlug;
+        }
+        if ($placeSlug) {
+            $where[]          = "pl.slug = :place";
+            $params[':place'] = $placeSlug;
+        }
+        if ($tag) {
+            $where[]        = "p.tags LIKE :tag";
+            $params[':tag'] = '%' . $tag . '%';
+        }
+
+        $whereStr = implode(' AND ', $where);
+
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(DISTINCT p.id)
+            FROM posts p
+            LEFT JOIN categories c  ON p.category_id = c.id
+            LEFT JOIN places     pl ON p.place_id    = pl.id
+            WHERE {$whereStr}
+        ");
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
     }
 
     // ----------------------------------------------------------

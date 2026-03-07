@@ -5,7 +5,10 @@
 // ============================================================
 
 $router->get('',                            'HomeController@index');
-$router->get('blog',                        'HomeController@index');
+$router->get('blog',                        'BlogController@index');
+
+// Histoire d'Angoulême
+$router->get('histoire-angouleme',          'HistoireController@index');
 
 // Articles
 $router->get('article/{slug}',              'PostController@show');
