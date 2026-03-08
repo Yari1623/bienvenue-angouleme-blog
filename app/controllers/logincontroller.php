@@ -57,17 +57,4 @@ class LoginController extends Controller
         header('Location: ' . BASE_URL . '/');
         exit;
     }
-
-    /**
-     * Déconnexion via navigator.sendBeacon (beforeunload)
-     * Pas de redirection — réponse 204 No Content
-     */
-    public function logoutBeacon(): void
-    {
-        if (Auth::check()) {
-            Auth::logout();
-        }
-        http_response_code(204);
-        exit;
-    }
 }

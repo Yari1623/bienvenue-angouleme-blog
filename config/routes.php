@@ -42,7 +42,6 @@ $router->post('compte/update-password',     'AccountController@updatePassword', 
 $router->get('login',                       'LoginController@show');
 $router->post('login',                      'LoginController@login');
 $router->get('logout',                      'LoginController@logout');
-$router->post('logout-beacon',              'LoginController@logoutBeacon');
 $router->get('register',                    'RegisterController@show');
 $router->post('register',                   'RegisterController@register');
 
@@ -113,3 +112,23 @@ $router->post('admin/events/store',         'EventController@store',            
 $router->get('admin/events/{id}/edit',      'EventController@edit',             true, 'admin');
 $router->post('admin/events/{id}/update',   'EventController@update',           true, 'admin');
 $router->post('admin/events/{id}/delete',   'EventController@delete',           true, 'admin');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

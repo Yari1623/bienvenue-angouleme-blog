@@ -572,20 +572,6 @@ function hideCookieBanner() {
     }
 })();
 
-// ── Déconnexion automatique si quitte le site ─────
-<?php if ($user): ?>
-window.addEventListener('beforeunload', function() {
-    // Utilise sendBeacon pour être fiable même en fermeture d'onglet
-    navigator.sendBeacon('<?= BASE_URL ?>/logout-beacon');
-});
-// Annuler si navigation interne
-document.addEventListener('click', function(e) {
-    const a = e.target.closest('a');
-    if (a && a.href && a.href.includes(window.location.hostname)) {
-        window.removeEventListener('beforeunload', arguments.callee);
-    }
-});
-<?php endif; ?>
 </script>
 
 </body>
