@@ -98,25 +98,116 @@ $thumb = !empty($post['thumbnail'])
 </div>
 
 <!-- ═══════════════════════════════════════════════
-     CONTENU DE L'ARTICLE
+     CONTENU DE L'ARTICLE (sections par blocs)
 ════════════════════════════════════════════════ -->
-<div class="article-body surface rounded-2xl p-6 md:p-10 space-y-5"
+<div class="article-body surface rounded-2xl p-6 md:p-10 space-y-6"
      style="font-family:'Source Sans 3',sans-serif;font-size:1rem;line-height:1.8;color:var(--text);">
-    <?php
-    // Rendu du contenu : si le contenu contient du HTML on l'affiche tel quel,
-    // sinon on gère les sauts de ligne et on crée des paragraphes
-    $rawContent = $post['content'] ?? '';
-    if (strip_tags($rawContent) === $rawContent) {
-        // Contenu texte brut → on crée des paragraphes
-        $paragraphes = array_filter(explode("\n\n", $rawContent));
-        foreach ($paragraphes as $para) {
-            echo '<p>' . nl2br(htmlspecialchars(trim($para))) . '</p>';
+
+    <?php if (!empty($sections)): ?>
+        <?php foreach ($sections as $section): ?>
+        <?php $type = $section['type']; ?>
+
+        <?php if ($type === 'text'): ?>
+            <?php
+            $text = $section['content'] ?? '';
+            $paragraphes = array_filter(explode("\n\n", $text));
+            foreach ($paragraphes as $para):
+            ?>
+            <p><?= nl2br(htmlspecialchars(trim($para))) ?></p>
+            <?php endforeach; ?>
+
+        <?php elseif ($type === 'title'): ?>
+            <h2><?= htmlspecialchars($section['content'] ?? '') ?></h2>
+
+        <?php elseif ($type === 'quote'): ?>
+            <blockquote>
+                <?= nl2br(htmlspecialchars($section['content'] ?? '')) ?>
+            </blockquote>
+
+        <?php elseif ($type === 'image'): ?>
+            <?php if (!empty($section['media_url'])): ?>
+            <figure>
+                <img src="<?= htmlspecialchars($section['media_url']) ?>"
+                     alt="<?= htmlspecialchars($section['content'] ?? '') ?>"
+                     class="w-full rounded-xl">
+                <?php if (!empty($section['content'])): ?>
+                <figcaption class="text-center text-sm mt-2"
+                            style="color:var(--muted);font-style:italic;">
+                    <?= htmlspecialchars($section['content']) ?>
+                </figcaption>
+                <?php endif; ?>
+            </figure>
+            <?php endif; ?>
+
+        <?php elseif ($type === 'video'): ?>
+            <?php if (!empty($section['media_url'])): ?>
+            <?php
+            $url = $section['media_url'];
+            // Détecter YouTube
+            preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $url, $yt);
+            // Détecter Vimeo
+            preg_match('/vimeo\.com\/(\d+)/', $url, $vi);
+            ?>
+            <div class="rounded-xl overflow-hidden" style="aspect-ratio:16/9;background:#000;">
+                <?php if (!empty($yt[1])): ?>
+                <iframe src="https://www.youtube.com/embed/<?= $yt[1] ?>"
+                        width="100%" height="100%"
+                        frameborder="0" allowfullscreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        style="display:block;width:100%;height:100%;"></iframe>
+                <?php elseif (!empty($vi[1])): ?>
+                <iframe src="https://player.vimeo.com/video/<?= $vi[1] ?>"
+                        width="100%" height="100%"
+                        frameborder="0" allowfullscreen
+                        style="display:block;width:100%;height:100%;"></iframe>
+                <?php else: ?>
+                <!-- URL vidéo directe (mp4, etc.) -->
+                <video controls class="w-full h-full" style="display:block;">
+                    <source src="<?= htmlspecialchars($url) ?>">
+                    Votre navigateur ne supporte pas la lecture vidéo.
+                </video>
+                <?php endif; ?>
+            </div>
+            <?php if (!empty($section['content'])): ?>
+            <p class="text-center text-sm" style="color:var(--muted);font-style:italic;">
+                <?= htmlspecialchars($section['content']) ?>
+            </p>
+            <?php endif; ?>
+            <?php endif; ?>
+
+        <?php elseif ($type === 'gallery'): ?>
+            <?php if (!empty($section['media_url'])): ?>
+            <?php $imgs = array_filter(array_map('trim', explode(',', $section['media_url']))); ?>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <?php foreach ($imgs as $img): ?>
+                <div class="rounded-xl overflow-hidden" style="aspect-ratio:4/3;background:var(--bg2);">
+                    <img src="<?= htmlspecialchars($img) ?>"
+                         alt="" class="w-full h-full object-cover">
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+
+        <?php endif; ?>
+        <?php endforeach; ?>
+
+    <?php elseif (!empty($post['content'])): ?>
+        <?php
+        // Fallback : contenu champ content (anciens articles)
+        $rawContent = $post['content'];
+        if (strip_tags($rawContent) === $rawContent) {
+            $paragraphes = array_filter(explode("\n\n", $rawContent));
+            foreach ($paragraphes as $para) {
+                echo '<p>' . nl2br(htmlspecialchars(trim($para))) . '</p>';
+            }
+        } else {
+            echo $rawContent;
         }
-    } else {
-        // Contenu HTML → affichage direct
-        echo $rawContent;
-    }
-    ?>
+        ?>
+    <?php else: ?>
+        <p style="color:var(--muted);font-style:italic;">Aucun contenu pour cet article.</p>
+    <?php endif; ?>
+
 </div>
 
 <!-- ═══════════════════════════════════════════════

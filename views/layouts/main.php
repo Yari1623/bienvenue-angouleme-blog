@@ -119,14 +119,12 @@
         html.dark .theme-toggle .toggle-track {
             background: linear-gradient(135deg, #1a1035 0%, #2d1b6b 50%, #0f2050 100%);
         }
-        /* nuages mode clair */
         .toggle-cloud {
             position: absolute; border-radius: 9999px;
             background: rgba(255,255,255,.85);
             transition: opacity .3s, transform .4s;
         }
         html.dark .toggle-cloud { opacity: 0; }
-        /* étoiles mode sombre */
         .toggle-star {
             position: absolute; border-radius: 50%;
             background: #fff; transition: opacity .3s;
@@ -147,6 +145,9 @@
             left: 48px;
             background: radial-gradient(circle at 35% 35%, #e8e8ff, #b0b8d8);
         }
+
+        /* ── Séparateur barre supérieure ── */
+        .topbar-sep { color: var(--border); user-select: none; }
 
         /* ── Cards articles ── */
         .post-card { background: var(--surface); border: 1px solid var(--border); transition: transform .2s, box-shadow .2s; border-radius: .5rem; overflow: hidden; }
@@ -184,6 +185,9 @@ use App\Core\Auth;
 use App\Core\Flash;
 $user    = Auth::user();
 $isAdmin = Auth::isAdmin();
+
+// URI courante pour détecter la page active
+$currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 ?>
 
 <!-- ════════════════════════════════ COOKIE BANNER -->
@@ -200,9 +204,9 @@ $isAdmin = Auth::isAdmin();
         <div class="text-5xl shrink-0">🍪</div>
     </div>
     <div class="flex items-center justify-between px-5 py-3" style="border-top:1px solid var(--border)">
-        <button onclick="cookieDeny()"   class="btn-ghost text-sm">Refuser</button>
+        <button onclick="cookieDeny()"    class="btn-ghost text-sm">Refuser</button>
         <button onclick="cookieDetails()" class="btn-outline text-sm">Je choisis</button>
-        <button onclick="cookieAccept()" class="btn-primary text-sm">OK pour moi ✓</button>
+        <button onclick="cookieAccept()"  class="btn-primary text-sm">OK pour moi ✓</button>
     </div>
 </div>
 
@@ -214,8 +218,6 @@ $isAdmin = Auth::isAdmin();
             <p class="text-sm mb-5" style="color:var(--text2)">
                 En autorisant ces services, vous acceptez le dépôt et la lecture de cookies nécessaires à leur bon fonctionnement.
             </p>
-
-            <!-- Global -->
             <div class="flex items-center justify-between mb-4 p-3 rounded-lg" style="background:var(--bg2)">
                 <span class="font-semibold text-sm" style="color:var(--text)">Préférences pour tous les services</span>
                 <div class="flex gap-2">
@@ -223,12 +225,8 @@ $isAdmin = Auth::isAdmin();
                     <button onclick="cookieDenyAll()"   class="btn-deny">✗ Tout refuser</button>
                 </div>
             </div>
-
-            <!-- Obligatoires -->
             <div class="cookie-section">
-                <div class="cookie-section-header">
-                    <span>🔒 Cookies obligatoires</span>
-                </div>
+                <div class="cookie-section-header"><span>🔒 Cookies obligatoires</span></div>
                 <div class="p-4 flex items-center justify-between">
                     <div>
                         <p class="text-sm" style="color:var(--text)">Ce site utilise des cookies nécessaires à son bon fonctionnement.</p>
@@ -237,12 +235,8 @@ $isAdmin = Auth::isAdmin();
                     <button class="btn-allow" disabled style="opacity:.6;cursor:not-allowed;">✓ Autorisé</button>
                 </div>
             </div>
-
-            <!-- Vidéos -->
             <div class="cookie-section">
-                <div class="cookie-section-header">
-                    <span>🎬 Vidéos</span>
-                </div>
+                <div class="cookie-section-header"><span>🎬 Vidéos</span></div>
                 <?php
                 $videoServices = [
                     ['id'=>'youtube',    'name'=>'YouTube',    'desc'=>'Lecteur vidéo YouTube intégré'],
@@ -262,9 +256,8 @@ $isAdmin = Auth::isAdmin();
                 </div>
                 <?php endforeach; ?>
             </div>
-
             <div class="flex justify-end gap-3 mt-4">
-                <button onclick="closeCookieModal()" class="btn-ghost">Fermer</button>
+                <button onclick="closeCookieModal()"  class="btn-ghost">Fermer</button>
                 <button onclick="saveCookieChoices()" class="btn-primary">Enregistrer mes choix</button>
             </div>
         </div>
@@ -274,62 +267,95 @@ $isAdmin = Auth::isAdmin();
 <!-- ════════════════════════════════ HEADER -->
 <header class="navbar shadow-sm">
 
-    <!-- Barre supérieure -->
+    <!-- ── Barre supérieure ── -->
     <div style="border-bottom:1px solid var(--border)">
         <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-xs" style="color:var(--muted)">
-            <span style="font-family:'Source Sans 3',sans-serif"><?php $jours = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"]; $mois = ["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]; echo $jours[date("N")-1] . " " . date("d") . " " . $mois[(int)date("n")] . " " . date("Y"); ?></span>
-            <div class="flex items-center gap-4">
+
+            <!-- Date -->
+            <span style="font-family:'Source Sans 3',sans-serif"><?php
+                $jours = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+                $mois  = ["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+                echo $jours[date("N")-1] . " " . date("d") . " " . $mois[(int)date("n")] . " " . date("Y");
+            ?></span>
+
+            <!-- Actions utilisateur -->
+            <div class="flex items-center gap-3" style="font-family:'Source Sans 3',sans-serif;">
                 <?php if ($user): ?>
+
                     <span style="color:var(--text2)">
                         Bonjour, <strong style="color:var(--text)"><?= htmlspecialchars($user['username']) ?></strong>
                     </span>
+
+                    <span class="topbar-sep">|</span>
+
                     <?php if ($isAdmin): ?>
                         <a href="<?= BASE_URL ?>/admin"
-                           class="font-semibold"
+                           class="font-semibold transition-colors hover:opacity-80"
                            style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-                            Dashboard
+                            ⚙ Dashboard
                         </a>
+                        <span class="topbar-sep">|</span>
                     <?php endif; ?>
+
                     <a href="<?= BASE_URL ?>/profil"
-                       style="color:var(--text2)" class="hover:text-brand1 transition-colors">Mon profil</a>
+                       class="transition-colors hover:text-brand1"
+                       style="color:<?= str_ends_with($currentUri, '/profil') ? '#1d8fd8' : 'var(--text2)' ?>">
+                        👤 Mon profil
+                    </a>
+
+                    <span class="topbar-sep">|</span>
+
+                    <a href="<?= BASE_URL ?>/compte"
+                       class="transition-colors hover:text-brand1"
+                       style="color:<?= str_ends_with($currentUri, '/compte') ? '#1d8fd8' : 'var(--text2)' ?>">
+                        ✏️ Mon compte
+                    </a>
+
+                    <span class="topbar-sep">|</span>
+
                     <a href="<?= BASE_URL ?>/logout"
-                       style="color:var(--text2)" class="hover:text-brand1 transition-colors">Déconnexion</a>
+                       class="transition-colors hover:text-brand1"
+                       style="color:var(--text2)">
+                        Déconnexion
+                    </a>
+
                 <?php else: ?>
-                    <a href="<?= BASE_URL ?>/login"    style="color:var(--text2)" class="hover:text-brand1 transition-colors">Connexion</a>
-                    <span style="color:var(--border)">|</span>
-                    <a href="<?= BASE_URL ?>/register" style="color:var(--text2)" class="hover:text-brand1 transition-colors">Inscription</a>
+                    <a href="<?= BASE_URL ?>/login"
+                       class="transition-colors hover:text-brand1"
+                       style="color:var(--text2)">Connexion</a>
+                    <span class="topbar-sep">|</span>
+                    <a href="<?= BASE_URL ?>/register"
+                       class="transition-colors hover:text-brand1"
+                       style="color:var(--text2)">Inscription</a>
                 <?php endif; ?>
 
                 <!-- Toggle dark/light -->
                 <button class="theme-toggle ml-2" onclick="toggleTheme()" title="Changer le thème" aria-label="Changer le thème">
                     <div class="toggle-track">
-                        <!-- Nuages mode clair -->
                         <div class="toggle-cloud" style="width:18px;height:7px;bottom:8px;left:8px;"></div>
                         <div class="toggle-cloud" style="width:12px;height:5px;bottom:14px;left:14px;"></div>
-                        <!-- Étoiles mode sombre -->
-                        <div class="toggle-star" style="width:3px;height:3px;top:8px;right:10px;"></div>
-                        <div class="toggle-star" style="width:2px;height:2px;top:14px;right:18px;"></div>
-                        <div class="toggle-star" style="width:2px;height:2px;top:20px;right:12px;"></div>
+                        <div class="toggle-star"  style="width:3px;height:3px;top:8px;right:10px;"></div>
+                        <div class="toggle-star"  style="width:2px;height:2px;top:14px;right:18px;"></div>
+                        <div class="toggle-star"  style="width:2px;height:2px;top:20px;right:12px;"></div>
                     </div>
                     <div class="toggle-thumb">
                         <span class="sun-icon">☀️</span>
                         <span class="moon-icon" style="display:none">🌙</span>
                     </div>
                 </button>
+
             </div>
         </div>
     </div>
 
-    <!-- Logo -->
+    <!-- ── Logo ── -->
     <div class="max-w-7xl mx-auto px-4 py-4">
         <a href="<?= BASE_URL ?>/" class="group flex items-center justify-center gap-5">
-            <!-- Image logo -->
             <img src="<?= BASE_URL ?>/assets/images/Logo_Blog_couleur_avec_fond_blanc.png"
                  alt="Logo Bienvenue à Angoulême — le blog"
                  width="120" height="120"
                  class="rounded-full shadow-md group-hover:scale-105 transition-transform duration-300"
                  style="width:120px;height:120px;object-fit:cover;">
-            <!-- Titre + tagline -->
             <div class="text-left">
                 <h1 class="font-display text-3xl md:text-4xl font-black leading-tight brand-gradient-text">
                     Bienvenue à Angoulême
@@ -342,21 +368,20 @@ $isAdmin = Auth::isAdmin();
         </a>
     </div>
 
-    <!-- Navigation -->
+    <!-- ── Navigation principale ── -->
     <nav class="max-w-7xl mx-auto px-4" style="border-top:1px solid var(--border)">
         <ul class="flex items-center gap-6 py-3 overflow-x-auto" style="font-family:'Source Sans 3',sans-serif;">
             <?php
-            $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             $navItems = [
-                ['url'=>'/',            'label'=>'Accueil'],
-                ['url'=>'/blog',         'label'=>'Blog'],
-                ['url'=>'/categories',   'label'=>'Catégories'],
-                ['url'=>'/agenda',       'label'=>'Agenda'],
-                ['url'=>'/a-propos',     'label'=>'À propos'],
-                ['url'=>'/contact',      'label'=>'Contact'],
+                ['url' => '/',           'label' => 'Accueil'],
+                ['url' => '/blog',        'label' => 'Blog'],
+                ['url' => '/categories',  'label' => 'Catégories'],
+                ['url' => '/agenda',      'label' => 'Agenda'],
+                ['url' => '/a-propos',    'label' => 'À propos'],
+                ['url' => '/contact',     'label' => 'Contact'],
             ];
-            foreach($navItems as $item):
-                $isActive = rtrim($currentUri,'/') === rtrim(BASE_URL.$item['url'],'/');
+            foreach ($navItems as $item):
+                $isActive = rtrim($currentUri, '/') === rtrim(BASE_URL . $item['url'], '/');
             ?>
             <li>
                 <a href="<?= BASE_URL . $item['url'] ?>"
@@ -367,6 +392,7 @@ $isAdmin = Auth::isAdmin();
             <?php endforeach; ?>
         </ul>
     </nav>
+
 </header>
 
 <!-- ════════════════════════════════ FLASH -->
@@ -393,11 +419,10 @@ $isAdmin = Auth::isAdmin();
     <div class="max-w-7xl mx-auto px-4 py-10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 
-            <!-- Colonne 1 — Logo -->
+            <!-- Logo -->
             <div class="flex flex-col items-start gap-3">
                 <img src="<?= BASE_URL ?>/assets/images/Logo_Blog_couleur_avec_fond_blanc.png"
-                     alt="Logo Bienvenue à Angoulême — le blog"
-                     width="64" height="64"
+                     alt="Logo" width="64" height="64"
                      class="rounded-full shadow"
                      style="width:64px;height:64px;object-fit:cover;">
                 <div>
@@ -408,24 +433,24 @@ $isAdmin = Auth::isAdmin();
                 </div>
             </div>
 
-            <!-- Colonne 2 — Navigation -->
+            <!-- Navigation -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text" style="font-family:'Source Sans 3',sans-serif;">Navigation</h4>
                 <ul class="space-y-2 text-sm" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                    <?php foreach($navItems as $item): ?>
+                    <?php foreach ($navItems as $item): ?>
                     <li><a href="<?= BASE_URL . $item['url'] ?>" class="hover:text-brand1 transition-colors"><?= $item['label'] ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
 
-            <!-- Colonne 3 — Légal -->
+            <!-- Légal -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text" style="font-family:'Source Sans 3',sans-serif;">Informations légales</h4>
                 <ul class="space-y-2 text-sm" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                    <li><a href="<?= BASE_URL ?>/mentions-legales"   class="hover:text-brand1 transition-colors">Mentions légales</a></li>
+                    <li><a href="<?= BASE_URL ?>/mentions-legales"          class="hover:text-brand1 transition-colors">Mentions légales</a></li>
                     <li><a href="<?= BASE_URL ?>/politique-confidentialite" class="hover:text-brand1 transition-colors">Politique de confidentialité</a></li>
-                    <li><a href="<?= BASE_URL ?>/politique-cookies"  class="hover:text-brand1 transition-colors">Politique des cookies</a></li>
-                    <li><a href="<?= BASE_URL ?>/rgpd"               class="hover:text-brand1 transition-colors">RGPD</a></li>
+                    <li><a href="<?= BASE_URL ?>/politique-cookies"         class="hover:text-brand1 transition-colors">Politique des cookies</a></li>
+                    <li><a href="<?= BASE_URL ?>/rgpd"                      class="hover:text-brand1 transition-colors">RGPD</a></li>
                     <li>
                         <button onclick="document.getElementById('cookie-banner').style.display='block'"
                                 class="hover:text-brand1 transition-colors text-left">
@@ -435,50 +460,39 @@ $isAdmin = Auth::isAdmin();
                 </ul>
             </div>
 
-            <!-- Colonne 4 — Réseaux sociaux -->
+            <!-- Réseaux sociaux -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text" style="font-family:'Source Sans 3',sans-serif;">Suivez-nous</h4>
                 <div class="flex flex-wrap gap-3">
-                    <!-- Facebook -->
                     <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook"
                        class="transition-all hover:scale-110 hover:shadow-lg"
                        style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
-                        <img src="<?= BASE_URL ?>/assets/icones/Facebook.png"
-                             alt="Suivez-nous sur Facebook"
-                             style="width:100%;height:100%;object-fit:cover;">
+                        <img src="<?= BASE_URL ?>/assets/icones/Facebook.png" alt="Facebook" style="width:100%;height:100%;object-fit:cover;">
                     </a>
-                    <!-- Instagram -->
                     <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram"
                        class="transition-all hover:scale-110 hover:shadow-lg"
                        style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
-                        <img src="<?= BASE_URL ?>/assets/icones/Instagram.png"
-                             alt="Suivez-nous sur Instagram"
-                             style="width:100%;height:100%;object-fit:cover;">
+                        <img src="<?= BASE_URL ?>/assets/icones/Instagram.png" alt="Instagram" style="width:100%;height:100%;object-fit:cover;">
                     </a>
-                    <!-- TikTok -->
                     <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" title="TikTok"
                        class="transition-all hover:scale-110 hover:shadow-lg"
                        style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
-                        <img src="<?= BASE_URL ?>/assets/icones/TikTok.png"
-                             alt="Suivez-nous sur TikTok"
-                             style="width:100%;height:100%;object-fit:cover;">
+                        <img src="<?= BASE_URL ?>/assets/icones/TikTok.png" alt="TikTok" style="width:100%;height:100%;object-fit:cover;">
                     </a>
-                    <!-- YouTube -->
                     <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" title="YouTube"
                        class="transition-all hover:scale-110 hover:shadow-lg"
                        style="width:56px;height:56px;border-radius:14px;overflow:hidden;display:block;">
-                        <img src="<?= BASE_URL ?>/assets/icones/YouTube.png"
-                             alt="Suivez-nous sur YouTube"
-                             style="width:100%;height:100%;object-fit:cover;">
+                        <img src="<?= BASE_URL ?>/assets/icones/YouTube.png" alt="YouTube" style="width:100%;height:100%;object-fit:cover;">
                     </a>
                 </div>
                 <p class="text-xs mt-4" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
                     Rejoignez notre communauté locale !
                 </p>
             </div>
+
         </div>
 
-        <div class="mt-8 pt-6 text-center text-xs" style="border-top:1px solid var(--border); color:var(--muted); font-family:'Source Sans 3',sans-serif;">
+        <div class="mt-8 pt-6 text-center text-xs" style="border-top:1px solid var(--border);color:var(--muted);font-family:'Source Sans 3',sans-serif;">
             © <?= date('Y') ?> Bienvenue à Angoulême — Tous droits réservés —
             <a href="<?= BASE_URL ?>/mentions-legales" class="hover:text-brand1 transition-colors ml-1">Mentions légales</a>
         </div>
@@ -490,12 +504,11 @@ $isAdmin = Auth::isAdmin();
 // ── Thème dark/light ──────────────────────────────
 function applyTheme(dark) {
     document.documentElement.classList.toggle('dark', dark);
-    const thumb = document.querySelector('.toggle-thumb');
-    const sun   = document.querySelector('.sun-icon');
-    const moon  = document.querySelector('.moon-icon');
+    const sun  = document.querySelector('.sun-icon');
+    const moon = document.querySelector('.moon-icon');
     if (sun && moon) {
-        sun.style.display  = dark ? 'none'  : 'inline';
-        moon.style.display = dark ? 'inline': 'none';
+        sun.style.display  = dark ? 'none'   : 'inline';
+        moon.style.display = dark ? 'inline' : 'none';
     }
 }
 function toggleTheme() {
@@ -503,9 +516,8 @@ function toggleTheme() {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     applyTheme(isDark);
 }
-// Init thème
-(function() {
-    const saved = localStorage.getItem('theme');
+(function () {
+    const saved      = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(saved ? saved === 'dark' : prefersDark);
 })();
@@ -514,11 +526,11 @@ function toggleTheme() {
 const COOKIE_KEY = 'bwa_cookies_choice';
 
 function cookieAccept() {
-    localStorage.setItem(COOKIE_KEY, JSON.stringify({choice:'accepted', youtube:true, vimeo:true, dailymotion:true}));
+    localStorage.setItem(COOKIE_KEY, JSON.stringify({choice:'accepted',youtube:true,vimeo:true,dailymotion:true}));
     hideCookieBanner();
 }
 function cookieDeny() {
-    localStorage.setItem(COOKIE_KEY, JSON.stringify({choice:'denied', youtube:false, vimeo:false, dailymotion:false}));
+    localStorage.setItem(COOKIE_KEY, JSON.stringify({choice:'denied',youtube:false,vimeo:false,dailymotion:false}));
     hideCookieBanner();
 }
 function cookieDetails() {
@@ -535,43 +547,31 @@ function cookieAcceptAll() {
     });
     saveCookieChoices(true);
 }
-function cookieDenyAll() {
-    saveCookieChoices(false);
-}
-function toggleCookie(service, allow, btn) {
-    // Feedback visuel
-    const allowBtn = document.querySelector('.cookie-btn-allow-' + service);
-    const denyBtn  = document.querySelector('.cookie-btn-deny-'  + service);
-    if (allow) {
-        allowBtn && (allowBtn.style.outline = '2px solid white');
-        denyBtn  && (denyBtn.style.opacity  = '.6');
-    } else {
-        denyBtn  && (denyBtn.style.outline  = '2px solid white');
-        allowBtn && (allowBtn.style.opacity = '.6');
-    }
+function cookieDenyAll() { saveCookieChoices(false); }
+function toggleCookie(service, allow) {
+    const a = document.querySelector('.cookie-btn-allow-' + service);
+    const d = document.querySelector('.cookie-btn-deny-'  + service);
+    if (allow) { a && (a.style.outline = '2px solid white'); d && (d.style.opacity = '.6'); }
+    else        { d && (d.style.outline = '2px solid white'); a && (a.style.opacity = '.6'); }
 }
 function saveCookieChoices(all = null) {
-    const choices = { choice: 'custom' };
+    const c = { choice: 'custom' };
     ['youtube','vimeo','dailymotion'].forEach(s => {
-        choices[s] = all === null
-            ? document.querySelector('.cookie-btn-allow-' + s)?.style.outline !== ''
+        c[s] = all === null
+            ? (document.querySelector('.cookie-btn-allow-' + s)?.style.outline !== '')
             : all;
     });
-    localStorage.setItem(COOKIE_KEY, JSON.stringify(choices));
+    localStorage.setItem(COOKIE_KEY, JSON.stringify(c));
     closeCookieModal();
 }
 function hideCookieBanner() {
     document.getElementById('cookie-banner').style.display = 'none';
 }
-// Init cookies
-(function() {
+(function () {
     if (!localStorage.getItem(COOKIE_KEY)) {
-        setTimeout(() => {
-            document.getElementById('cookie-banner').style.display = 'block';
-        }, 1200);
+        setTimeout(() => { document.getElementById('cookie-banner').style.display = 'block'; }, 1200);
     }
 })();
-
 </script>
 
 </body>
