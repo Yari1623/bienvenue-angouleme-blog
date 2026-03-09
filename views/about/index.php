@@ -144,20 +144,28 @@ $pageTitle = 'À propos — Bienvenue à Angoulême';
                 <p class="text-sm leading-relaxed" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
                     Passionné par la vie locale angoumoisine, j'ai créé ce blog pour partager l'actualité,
                     les événements et les bons plans de notre belle ville. Ce projet est aussi l'occasion
-                    de mettre en pratique mes compétences en développement web dans le cadre de ma formation DWWM.
+                    de mettre en pratique mes compétences diverses acquises au fil des années et pratiquées au cours de mes loisirs et des formations suivies.
                 </p>
                 <div class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
                     <span class="px-3 py-1 rounded-full text-xs font-semibold text-white"
                           style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);font-family:'Source Sans 3',sans-serif;">
-                        Développeur Web
+                        Photographe
                     </span>
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold"
-                          style="background:var(--bg2);color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                        📍 Angoulême
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                          style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);font-family:'Source Sans 3',sans-serif;">
+                        Vidéaste
                     </span>
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold"
-                          style="background:var(--bg2);color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                        🎓 Formation DWWM
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                          style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);font-family:'Source Sans 3',sans-serif;">
+                        Droniste
+                    </span>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                          style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);font-family:'Source Sans 3',sans-serif;">
+                        Graphiste
+                    </span>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                          style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);font-family:'Source Sans 3',sans-serif;">
+                        Développeur web
                     </span>
                 </div>
             </div>

@@ -19,7 +19,7 @@ function dateFr(string $date): string {
 
     <!-- Photo / vidéo de fond -->
     <div class="absolute inset-0">
-        <img src="<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg"
+        <img src="<?= BASE_URL ?>/assets/images/panorama_angouleme.jpg"
              alt="Angoulême"
              class="w-full h-full object-cover">
         <!-- Overlay gradient -->
@@ -77,7 +77,7 @@ function dateFr(string $date): string {
     <div class="grid grid-cols-1 md:grid-cols-2">
         <!-- Image -->
         <div class="relative" style="min-height:280px;">
-            <img src="<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg"
+            <img src="<?= BASE_URL ?>/assets/images/tour_mairie_angouleme.jpg"
                  alt="Histoire d'Angoulême"
                  class="w-full h-full object-cover absolute inset-0">
             <div class="absolute inset-0" style="background:linear-gradient(to right,transparent,var(--surface))"></div>

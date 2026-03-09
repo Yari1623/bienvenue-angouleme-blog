@@ -4,7 +4,7 @@
 
     <!-- Hero -->
     <div class="relative rounded-2xl overflow-hidden" style="min-height:300px;">
-        <img src="<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg"
+        <img src="<?= BASE_URL ?>/assets/images/panorama_angouleme.jpg"
              alt="Angoulême vue aérienne"
              class="w-full h-full object-cover absolute inset-0">
         <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(13,25,45,.85),rgba(29,143,216,.5))"></div>
