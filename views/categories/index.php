@@ -1,159 +1,57 @@
 <?php
-// views/categories/index.php
-$pageTitle = 'Catégories & Lieux — Bienvenue à Angoulême';
-
-$categoriesData = [
-    'actualites'               => ['img'=>'Actualites.png',              'desc'=>'Toute l\'actualité locale d\'Angoulême et de la Charente : politique, économie, société.'],
-    'animaux'                  => ['img'=>'Animaux.png',                 'desc'=>'Actualités, conseils et bons plans autour de la vie animale dans notre région.'],
-    'architecture-et-patrimoine'=> ['img'=>'Architecture_Patrimoine.png','desc'=>'Découvrez l\'architecture remarquable et le riche patrimoine historique d\'Angoulême.'],
-    'commerce'                 => ['img'=>'Commerce.png',                'desc'=>'Commerces locaux, ouvertures, fermetures et bons plans shopping en Charente.'],
-    'culture'                  => ['img'=>'Culture.png',                 'desc'=>'Expositions, théâtre, cinéma, BD et toute la vie culturelle angoumoisine.'],
-    'divers'                   => ['img'=>'Divers.png',                  'desc'=>'Tout ce qui ne rentre pas dans les autres catégories mais mérite d\'être partagé.'],
-    'evenement'                => ['img'=>'Evenement.png',               'desc'=>'Fêtes, festivals, marchés, concerts — tous les événements à ne pas manquer.'],
-    'high-tech'                => ['img'=>'High_tech.png',               'desc'=>'Innovation, numérique, nouvelles technologies et startups locales.'],
-    'musique'                  => ['img'=>'Musique.png',                 'desc'=>'Concerts, artistes locaux, festivals de musique et actualités musicales.'],
-    'nature-et-environnement'  => ['img'=>'Nature_Environnement.png',    'desc'=>'Environnement, biodiversité, randonnées et nature en Charente.'],
-    'social'                   => ['img'=>'Social.png',                  'desc'=>'Associations, solidarité, vie communautaire et initiatives sociales locales.'],
-    'sport'                    => ['img'=>'Sports.png',                  'desc'=>'Clubs sportifs, résultats, événements et actualités du sport en Charente.'],
-];
-
-$placesData = [
-    'angouleme'          => ['img'=>'angouleme.png',          'nom'=>'Angoulême',          'desc'=>'Le cœur de la Charente, perché sur son éperon rocheux.'],
-    'grand-angouleme'    => ['img'=>'grand-angouleme.png',    'nom'=>'Grand Angoulême',    'desc'=>'La communauté d\'agglomération regroupant 15 communes.'],
-    'charente'           => ['img'=>'charente.png',           'nom'=>'Charente',           'desc'=>'Le département de la Charente et toutes ses communes.'],
-    'poitou-charentes'   => ['img'=>'poitou-charentes.png',   'nom'=>'Poitou-Charentes',   'desc'=>'L\'ancienne région historique du grand ouest français.'],
-    'nouvelle-aquitaine' => ['img'=>'nouvelle-aquitaine.png', 'nom'=>'Nouvelle-Aquitaine', 'desc'=>'La grande région administrative dont fait partie la Charente.'],
-    'france'             => ['img'=>'france.png',             'nom'=>'France',             'desc'=>'Actualités et événements à l\'échelle nationale.'],
-    'europe'             => ['img'=>'europe.png',             'nom'=>'Europe',             'desc'=>'Ce qui se passe en Europe et impacte notre territoire.'],
-    'monde'              => ['img'=>'monde.png',              'nom'=>'Monde',              'desc'=>'Les grands événements mondiaux vus depuis Angoulême.'],
-];
+$pageTitle = 'Gestion des catégories — Admin';
 ?>
-
-<div class="space-y-14">
-
-    <!-- Hero -->
-    <div class="text-center">
-        <h2 class="font-display text-3xl font-black mb-2" style="color:var(--text)">Explorer le blog</h2>
-        <div class="h-1 w-24 mx-auto rounded-full mb-4" style="background:linear-gradient(135deg,#1d8fd8,#22d3ee)"></div>
-        <p class="text-sm max-w-xl mx-auto" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-            Naviguez par thème ou par zone géographique pour trouver les articles qui vous intéressent.
-        </p>
+<div class="space-y-6">
+    <div class="flex flex-wrap items-start justify-between gap-3 pb-4" style="border-bottom:2px solid var(--border)">
+        <h2 class="font-display text-2xl font-black" style="color:var(--text)">Catégories</h2>
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="<?= BASE_URL ?>/admin/categories/create" class="btn-primary px-4 py-2 text-sm">+ Nouvelle catégorie</a>
+            <a href="<?= BASE_URL ?>/admin" class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
+        </div>
     </div>
-
-    <!-- ═══════════ CATÉGORIES ═══════════ -->
-    <section>
-        <div class="flex items-center gap-4 mb-6">
-            <h2 class="font-display text-2xl font-bold" style="color:var(--text)">Thèmes</h2>
-            <div class="flex-1 h-px" style="background:linear-gradient(to right,#1d8fd8,transparent)"></div>
-            <span class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
-                <?= count($categories ?? []) ?> catégories
-            </span>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            <?php foreach ($categories ?? [] as $cat):
-                $meta   = $categoriesData[$cat['slug']] ?? ['img' => null, 'desc' => ''];
-                $count  = $cat['post_count'] ?? 0;
-                // ── Chemin correct : assets/categories/
-                $imgSrc = $meta['img']
-                    ? BASE_URL . '/assets/categories/' . $meta['img']
-                    : BASE_URL . '/assets/images/visuel_à_venir.jpg';
-            ?>
-            <a href="<?= BASE_URL ?>/categorie/<?= htmlspecialchars($cat['slug']) ?>"
-               class="group surface rounded-xl overflow-hidden flex flex-col"
-               style="transition:transform .2s,box-shadow .2s,border-color .2s;"
-               onmouseover="this.style.borderColor='#1d8fd8';this.style.boxShadow='0 8px 24px rgba(29,143,216,.2)';this.style.transform='translateY(-4px)'"
-               onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none';this.style.transform='translateY(0)'">
-
-                <!-- Image — hauteur fixe, pas de coupure -->
-                <div class="relative flex items-center justify-center overflow-hidden"
-                     style="height:160px;background:var(--bg2);">
-                    <img src="<?= $imgSrc ?>"
-                         alt="<?= htmlspecialchars($cat['name']) ?>"
-                         class="w-full h-full transition-transform duration-500 group-hover:scale-105"
-                         style="object-fit:contain;padding:.75rem;"
-                         onerror="this.src='<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg'">
-                    <!-- Badge nb articles -->
-                    <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold text-white"
-                          style="background:rgba(0,0,0,.45);backdrop-filter:blur(4px);font-family:'Source Sans 3',sans-serif;">
-                        <?= $count ?> article<?= $count > 1 ? 's' : '' ?>
-                    </span>
-                </div>
-
-                <!-- Texte -->
-                <div class="p-4 flex-1 flex flex-col" style="border-top:3px solid;border-image:linear-gradient(135deg,#1d8fd8,#22d3ee) 1;">
-                    <h3 class="font-display text-base font-bold mb-1" style="color:var(--text)">
-                        <?= htmlspecialchars($cat['name']) ?>
-                    </h3>
-                    <p class="text-xs leading-relaxed flex-1" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                        <?= $meta['desc'] ?>
-                    </p>
-                    <span class="text-xs font-bold mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                          style="color:#1d8fd8;font-family:'Source Sans 3',sans-serif;">
-                        Voir les articles →
-                    </span>
-                </div>
-            </a>
-            <?php endforeach; ?>
-        </div>
-    </section>
-
-    <!-- ═══════════ LIEUX ═══════════ -->
-    <section>
-        <div class="flex items-center gap-4 mb-6">
-            <h2 class="font-display text-2xl font-bold" style="color:var(--text)">Zones géographiques</h2>
-            <div class="flex-1 h-px" style="background:linear-gradient(to right,#1d8fd8,transparent)"></div>
-            <span class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
-                <?= count($places ?? []) ?> lieux
-            </span>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
-            <?php foreach ($places ?? [] as $place):
-                $meta   = $placesData[$place['slug']] ?? ['img' => null, 'nom' => $place['name'], 'desc' => ''];
-                $count  = $place['post_count'] ?? 0;
-                // ── Chemin correct : assets/lieux/
-                $imgSrc = $meta['img']
-                    ? BASE_URL . '/assets/lieux/' . $meta['img']
-                    : BASE_URL . '/assets/images/visuel_à_venir.jpg';
-            ?>
-            <div class="surface rounded-xl overflow-hidden flex flex-col">
-
-                <!-- Carte géographique — hauteur fixe, object-contain pour ne pas couper -->
-                <div class="flex items-center justify-center p-4"
-                     style="height:140px;background:var(--bg2);">
-                    <img src="<?= $imgSrc ?>"
-                         alt="<?= htmlspecialchars($meta['nom']) ?>"
-                         class="max-w-full max-h-full"
-                         style="object-fit:contain;width:auto;height:100%;"
-                         onerror="this.src='<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg'">
-                </div>
-
-                <!-- Infos -->
-                <div class="p-4 flex-1 flex flex-col"
-                     style="border-top:3px solid;border-image:linear-gradient(135deg,#1d8fd8,#22d3ee) 1;">
-                    <h3 class="font-display text-sm font-bold mb-1" style="color:var(--text)">
-                        <?= htmlspecialchars($meta['nom']) ?>
-                    </h3>
-                    <p class="text-xs leading-relaxed flex-1" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-                        <?= $meta['desc'] ?>
-                    </p>
-                    <span class="text-xs mt-2 font-semibold" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
-                        <?= $count ?> article<?= $count > 1 ? 's' : '' ?>
-                    </span>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="surface rounded-xl p-8 text-center">
-        <h3 class="font-display text-xl font-bold mb-2" style="color:var(--text)">Prêt à explorer ?</h3>
-        <p class="text-sm mb-5" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
-            Parcourez tous les articles ou utilisez les filtres de la page Blog.
-        </p>
-        <a href="<?= BASE_URL ?>/blog" class="btn-primary inline-block">Voir tous les articles →</a>
-    </section>
-
+ 
+    <?php if (empty($categories)): ?>
+    <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;"><p class="text-4xl mb-3">🏷</p><p>Aucune catégorie.</p></div>
+    <?php else: ?>
+ 
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:.75rem;border:1px solid var(--border);">
+        <table style="width:100%;min-width:380px;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
+            <thead>
+                <tr style="background:linear-gradient(135deg,#1d8fd8,#22d3ee)">
+                    <th style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Nom</th>
+                    <th style="text-align:center;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Articles</th>
+                    <th style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Slug</th>
+                    <th style="text-align:right;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($categories as $i => $cat): ?>
+                <tr style="background:<?= $i%2===0?'var(--surface)':'var(--bg2)' ?>;border-bottom:1px solid var(--border);">
+                    <td style="padding:.75rem 1rem;font-weight:600;color:var(--text);white-space:nowrap;"><?= htmlspecialchars($cat['name']) ?></td>
+                    <td style="padding:.75rem 1rem;text-align:center;">
+                        <span style="padding:.2rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);">
+                            <?= $cat['post_count'] ?? 0 ?>
+                        </span>
+                    </td>
+                    <td style="padding:.75rem 1rem;font-size:.75rem;color:var(--muted);"><?= htmlspecialchars($cat['slug']) ?></td>
+                    <td style="padding:.75rem 1rem;text-align:right;">
+                        <div style="display:flex;gap:.3rem;justify-content:flex-end;">
+                            <a href="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/edit"
+                               style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #1d8fd8;color:#1d8fd8;text-decoration:none;white-space:nowrap;"
+                               onmouseover="this.style.background='#1d8fd8';this.style.color='white'"
+                               onmouseout="this.style.background='';this.style.color='#1d8fd8'">Éditer</a>
+                            <form method="POST" action="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/delete" style="display:inline;" onsubmit="return confirm('Supprimer ?')">
+                                <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
+                                <button style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;"
+                                    onmouseover="this.style.background='#dc2626';this.style.color='white'"
+                                    onmouseout="this.style.background='transparent';this.style.color='#dc2626'">🗑</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
 </div>

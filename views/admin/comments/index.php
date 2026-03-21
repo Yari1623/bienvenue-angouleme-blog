@@ -1,284 +1,173 @@
 <?php
-// views/admin/comments/index.php
-$pageTitle = 'Gestion des commentaires — Admin';
+$pageTitle     = 'Gestion des commentaires — Admin';
 $currentFilter = $filter ?? 'all';
+$perPage       = 15;
+$currentPage   = max(1, (int)($_GET['page'] ?? 1));
+$totalItems    = count($comments ?? []);
+$totalPages    = max(1, (int)ceil($totalItems / $perPage));
+$currentPage   = min($currentPage, $totalPages);
+$pageItems     = array_slice($comments ?? [], ($currentPage-1)*$perPage, $perPage);
 ?>
-
 <div class="space-y-6">
-
-    <div class="flex items-center justify-between border-b-2 border-ink pb-4">
+    <div class="flex flex-wrap items-start justify-between gap-3 pb-4" style="border-bottom:2px solid var(--border)">
         <div>
-            <h2 class="font-display text-2xl font-black text-ink">Commentaires</h2>
+            <h2 class="font-display text-2xl font-black" style="color:var(--text)">Commentaires</h2>
             <?php if (($pending ?? 0) > 0): ?>
-            <p class="font-body text-sm text-accent font-semibold mt-1">
-                ⚠ <?= $pending ?> commentaire<?= $pending > 1 ? 's' : '' ?> en attente de modération
+            <p class="text-sm font-semibold mt-1" style="color:#f97316;font-family:'Source Sans 3',sans-serif;">
+                ⚠ <?= $pending ?> en attente
             </p>
             <?php endif; ?>
         </div>
-        <a href="<?= BASE_URL ?>/admin" class="text-sm font-body text-muted hover:text-accent transition-colors">
-            ← Dashboard
-        </a>
+        <a href="<?= BASE_URL ?>/admin" class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
     </div>
-
-    <!-- Filtres -->
-    <div class="flex gap-2 font-body text-sm">
+ 
+    <div class="flex gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;font-size:.875rem;">
         <a href="<?= BASE_URL ?>/admin/comments"
-           class="px-4 py-2 border transition-colors <?= $currentFilter === 'all' ? 'bg-ink text-paper border-ink' : 'border-border hover:border-ink' ?>">
-            Tous
+           style="padding:.4rem 1rem;border-radius:9999px;border:1px solid;font-weight:600;text-decoration:none;
+           <?= $currentFilter==='all' ? 'background:linear-gradient(135deg,#1d8fd8,#22d3ee);color:white;border-color:transparent;' : 'background:var(--bg2);color:var(--text2);border-color:var(--border);' ?>">
+            Tous (<?= $totalItems ?>)
         </a>
         <a href="<?= BASE_URL ?>/admin/comments?filter=pending"
-           class="px-4 py-2 border transition-colors <?= $currentFilter === 'pending' ? 'bg-ink text-paper border-ink' : 'border-border hover:border-ink' ?>">
+           style="padding:.4rem 1rem;border-radius:9999px;border:1px solid;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:.4rem;
+           <?= $currentFilter==='pending' ? 'background:linear-gradient(135deg,#f97316,#fbbf24);color:white;border-color:transparent;' : 'background:var(--bg2);color:var(--text2);border-color:var(--border);' ?>">
             En attente
             <?php if (($pending ?? 0) > 0): ?>
-            <span class="ml-1 px-1.5 py-0.5 bg-accent text-paper text-xs rounded-full"><?= $pending ?></span>
+            <span style="background:#f97316;color:white;padding:.1rem .4rem;border-radius:9999px;font-size:.7rem;font-weight:700;"><?= $pending ?></span>
             <?php endif; ?>
         </a>
     </div>
-
+ 
     <?php if (empty($comments)): ?>
-    <div class="text-center py-16 text-muted font-body">
-        <p class="text-4xl mb-3">💬</p>
-        <p>Aucun commentaire<?= $currentFilter === 'pending' ? ' en attente' : '' ?>.</p>
+    <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
+        <p class="text-4xl mb-3">💬</p><p>Aucun commentaire<?= $currentFilter==='pending'?' en attente':'' ?>.</p>
     </div>
     <?php else: ?>
-
-    <div class="bg-white border border-border overflow-hidden">
-        <table class="w-full text-sm font-body">
-            <thead class="bg-ink text-paper">
-                <tr>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">Auteur</th>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">Commentaire</th>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Article</th>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Date</th>
-                    <th class="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider">Statut</th>
-                    <th class="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider">Actions</th>
+ 
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:.75rem;border:1px solid var(--border);">
+        <table style="width:100%;min-width:550px;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
+            <thead>
+                <tr style="background:linear-gradient(135deg,#1d8fd8,#22d3ee)">
+                    <th style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Auteur</th>
+                    <th style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Commentaire</th>
+                    <th style="text-align:center;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Statut</th>
+                    <th style="text-align:right;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-border">
-                <?php foreach ($comments as $comment): ?>
-                <tr class="hover:bg-paper/50 transition-colors <?= $comment['status'] === 'pending' ? 'bg-yellow-50/30' : '' ?>">
-
-                    <td class="px-4 py-3 font-semibold text-ink whitespace-nowrap">
-                        <?= htmlspecialchars($comment['username']) ?>
-                    </td>
-
-                    <!-- Commentaire tronqué + bouton Lire -->
-                    <td class="px-4 py-3 text-muted max-w-xs">
-                        <div class="flex items-start gap-2">
-                            <p class="truncate flex-1">
-                                <?= htmlspecialchars(mb_substr($comment['content'], 0, 60)) ?><?= mb_strlen($comment['content']) > 60 ? '…' : '' ?>
-                            </p>
+            <tbody>
+                <?php foreach ($pageItems as $i => $comment): ?>
+                <tr style="background:<?= $comment['status']==='pending' ? 'rgba(249,115,22,.06)' : ($i%2===0?'var(--surface)':'var(--bg2)') ?>;border-bottom:1px solid var(--border);">
+                    <td style="padding:.75rem 1rem;font-weight:600;white-space:nowrap;color:var(--text);"><?= htmlspecialchars($comment['username']) ?></td>
+                    <td style="padding:.75rem 1rem;max-width:200px;">
+                        <div style="display:flex;align-items:center;gap:.5rem;">
+                            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2);">
+                                <?= htmlspecialchars(mb_substr($comment['content'],0,50)) ?><?= mb_strlen($comment['content'])>50?'…':'' ?>
+                            </span>
                             <button onclick="openCommentModal(<?= $comment['id'] ?>)"
-                                    class="shrink-0 text-xs font-semibold px-2 py-1 rounded border transition-colors"
-                                    style="border-color:#1d8fd8;color:#1d8fd8;"
+                                    style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:.375rem;border:1.5px solid #1d8fd8;color:#1d8fd8;background:transparent;cursor:pointer;white-space:nowrap;"
                                     onmouseover="this.style.background='#1d8fd8';this.style.color='white'"
-                                    onmouseout="this.style.background='';this.style.color='#1d8fd8'">
-                                👁 Lire
-                            </button>
+                                    onmouseout="this.style.background='transparent';this.style.color='#1d8fd8'">👁</button>
                         </div>
                     </td>
-
-                    <td class="px-4 py-3 hidden md:table-cell">
-                        <a href="<?= BASE_URL ?>/article/<?= htmlspecialchars($comment['post_slug'] ?? '') ?>"
-                           target="_blank"
-                           class="text-muted hover:text-accent transition-colors truncate block max-w-xs">
-                            <?= htmlspecialchars($comment['post_title'] ?? '—') ?>
-                        </a>
-                    </td>
-
-                    <td class="px-4 py-3 hidden lg:table-cell text-muted text-xs whitespace-nowrap">
-                        <?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?>
-                    </td>
-
-                    <td class="px-4 py-3 text-center">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full
-                            <?php echo match($comment['status']) {
-                                'approved' => 'bg-green-100 text-green-800',
-                                'rejected' => 'bg-red-100 text-red-800',
-                                default    => 'bg-yellow-100 text-yellow-800',
-                            } ?>">
-                            <?php echo match($comment['status']) {
-                                'approved' => 'Approuvé',
-                                'rejected' => 'Refusé',
-                                default    => 'En attente',
-                            } ?>
+                    <td style="padding:.75rem 1rem;text-align:center;">
+                        <span style="padding:.2rem .5rem;font-size:.7rem;font-weight:700;border-radius:9999px;white-space:nowrap;
+                            <?php echo match($comment['status']){'approved'=>'background:#dcfce7;color:#166534;','rejected'=>'background:#fee2e2;color:#991b1b;',default=>'background:#fef9c3;color:#854d0e;'}?>">
+                            <?php echo match($comment['status']){'approved'=>'OK','rejected'=>'Refusé',default=>'Attente'}?>
                         </span>
                     </td>
-
-                    <td class="px-4 py-3">
-                        <div class="flex items-center justify-end gap-2">
-                            <?php if ($comment['status'] !== 'approved'): ?>
-                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/approve" class="inline">
+                    <td style="padding:.75rem 1rem;text-align:right;">
+                        <div style="display:flex;gap:.3rem;justify-content:flex-end;flex-wrap:nowrap;">
+                            <?php if ($comment['status']!=='approved'): ?>
+                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/approve" style="display:inline;">
                                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                                <button class="px-3 py-1.5 text-xs font-semibold border border-green-300 text-green-700 hover:bg-green-50 transition-colors">
-                                    ✓
-                                </button>
+                                <button style="padding:.25rem .5rem;font-size:.75rem;font-weight:700;border-radius:.375rem;border:1.5px solid #16a34a;color:#16a34a;background:transparent;cursor:pointer;"
+                                    onmouseover="this.style.background='#16a34a';this.style.color='white'"
+                                    onmouseout="this.style.background='transparent';this.style.color='#16a34a'">✓</button>
                             </form>
                             <?php endif; ?>
-
-                            <?php if ($comment['status'] !== 'rejected'): ?>
-                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/reject" class="inline">
+                            <?php if ($comment['status']!=='rejected'): ?>
+                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/reject" style="display:inline;">
                                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                                <button class="px-3 py-1.5 text-xs font-semibold border border-yellow-300 text-yellow-700 hover:bg-yellow-50 transition-colors">
-                                    ✗
-                                </button>
+                                <button style="padding:.25rem .5rem;font-size:.75rem;font-weight:700;border-radius:.375rem;border:1.5px solid #d97706;color:#d97706;background:transparent;cursor:pointer;"
+                                    onmouseover="this.style.background='#d97706';this.style.color='white'"
+                                    onmouseout="this.style.background='transparent';this.style.color='#d97706'">✗</button>
                             </form>
                             <?php endif; ?>
-
-                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/delete" class="inline"
-                                  onsubmit="return confirm('Supprimer ce commentaire ?')">
+                            <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/delete" style="display:inline;" onsubmit="return confirm('Supprimer ?')">
                                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                                <button class="px-3 py-1.5 text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition-colors">
-                                    🗑
-                                </button>
+                                <button style="padding:.25rem .5rem;font-size:.75rem;font-weight:700;border-radius:.375rem;border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;"
+                                    onmouseover="this.style.background='#dc2626';this.style.color='white'"
+                                    onmouseout="this.style.background='transparent';this.style.color='#dc2626'">🗑</button>
                             </form>
                         </div>
                     </td>
-
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
+ 
+    <?php if ($totalPages > 1): ?>
+    <div class="flex justify-center items-center gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;">
+        <?php if ($currentPage>1): ?><a href="?filter=<?=$currentFilter?>&page=<?=$currentPage-1?>" class="page-btn">← Préc.</a><?php endif; ?>
+        <?php $ellipsis=false; for($i=1;$i<=$totalPages;$i++): if($i===1||$i===$totalPages||abs($i-$currentPage)<=2): $ellipsis=false; ?>
+        <a href="?filter=<?=$currentFilter?>&page=<?=$i?>" class="page-btn <?=$i===$currentPage?'active':''?>"><?=$i?></a>
+        <?php elseif(!$ellipsis): $ellipsis=true; echo '<span style="color:var(--muted)">…</span>'; endif; endfor; ?>
+        <?php if ($currentPage<$totalPages): ?><a href="?filter=<?=$currentFilter?>&page=<?=$currentPage+1?>" class="page-btn">Suiv. →</a><?php endif; ?>
+    </div>
+    <?php endif; ?>
     <?php endif; ?>
 </div>
-
-<!-- Données JSON pour la modale -->
+ 
 <script>
 const COMMENTS_DATA = {
     <?php foreach ($comments as $c): ?>
     <?= $c['id'] ?>: {
-        id:         <?= $c['id'] ?>,
-        username:   <?= json_encode($c['username']) ?>,
-        content:    <?= json_encode($c['content']) ?>,
-        post_title: <?= json_encode($c['post_title'] ?? '') ?>,
-        post_slug:  <?= json_encode($c['post_slug']  ?? '') ?>,
-        date:       <?= json_encode(date('d/m/Y à H:i', strtotime($c['created_at']))) ?>,
-        status:     <?= json_encode($c['status']) ?>,
-        csrf:       <?= json_encode(\App\Core\Csrf::generate()) ?>,
+        id:<?= $c['id'] ?>,username:<?= json_encode($c['username']) ?>,content:<?= json_encode($c['content']) ?>,
+        post_title:<?= json_encode($c['post_title']??'') ?>,post_slug:<?= json_encode($c['post_slug']??'') ?>,
+        date:<?= json_encode(date('d/m/Y à H:i',strtotime($c['created_at']))) ?>,
+        status:<?= json_encode($c['status']) ?>,csrf:<?= json_encode(\App\Core\Csrf::generate()) ?>,
     },
     <?php endforeach; ?>
-};
 </script>
-
-<!-- ════ MODALE ════ -->
-<div id="comment-modal"
-     class="fixed inset-0 z-50 items-center justify-center p-4"
-     style="display:none;background:rgba(0,0,0,.6);">
-
-    <div class="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
-         style="background:var(--surface);border:1px solid var(--border);">
-
-        <!-- En-tête -->
-        <div class="flex items-center justify-between px-6 py-4"
-             style="border-bottom:1px solid var(--border);">
+ 
+<div id="comment-modal" class="fixed inset-0 z-50 items-center justify-center p-4" style="display:none;background:rgba(0,0,0,.6);">
+    <div class="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden" style="background:var(--surface);border:1px solid var(--border);">
+        <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border);">
             <div>
-                <h3 class="font-display text-lg font-bold" style="color:var(--text)">
-                    Commentaire de <span id="modal-username" style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></span>
-                </h3>
-                <p class="text-xs mt-1" style="color:var(--muted);">
-                    Article : <a id="modal-post-link" href="#" target="_blank" style="color:#1d8fd8;" class="hover:underline"></a>
-                    &nbsp;·&nbsp; <span id="modal-date"></span>
-                </p>
+                <h3 class="font-display text-lg font-bold" style="color:var(--text)">Commentaire de <span id="modal-username" style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></span></h3>
+                <p class="text-xs mt-1" style="color:var(--muted);">Article : <a id="modal-post-link" href="#" target="_blank" style="color:#1d8fd8;"></a> · <span id="modal-date"></span></p>
             </div>
-            <button onclick="closeCommentModal()"
-                    class="w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors"
-                    style="background:var(--bg2);color:var(--text2);font-size:1rem;"
-                    onmouseover="this.style.background='#ef4444';this.style.color='white'"
-                    onmouseout="this.style.background='var(--bg2)';this.style.color='var(--text2)'">
-                ✕
-            </button>
+            <button onclick="closeCommentModal()" style="width:2rem;height:2rem;border-radius:50%;border:none;background:var(--bg2);color:var(--text2);cursor:pointer;font-size:1rem;"
+                onmouseover="this.style.background='#ef4444';this.style.color='white'"
+                onmouseout="this.style.background='var(--bg2)';this.style.color='var(--text2)'">✕</button>
         </div>
-
-        <!-- Contenu complet -->
         <div class="px-6 pt-5 pb-3">
-            <div id="modal-content"
-                 class="text-sm leading-relaxed p-4 rounded-xl whitespace-pre-wrap"
-                 style="background:var(--bg2);color:var(--text);border:1px solid var(--border);max-height:280px;overflow-y:auto;font-family:'Source Sans 3',sans-serif;">
-            </div>
+            <div id="modal-content" class="text-sm leading-relaxed p-4 rounded-xl whitespace-pre-wrap"
+                 style="background:var(--bg2);color:var(--text);border:1px solid var(--border);max-height:280px;overflow-y:auto;font-family:'Source Sans 3',sans-serif;"></div>
         </div>
-
-        <!-- Statut -->
-        <div class="px-6 pb-3">
-            <span id="modal-status-badge" class="px-3 py-1 text-xs font-bold rounded-full"></span>
-        </div>
-
-        <!-- Actions -->
-        <div id="modal-actions" class="flex items-center justify-end gap-3 px-6 py-4"
-             style="border-top:1px solid var(--border);">
-        </div>
-
+        <div class="px-6 pb-3"><span id="modal-status-badge" class="px-3 py-1 text-xs font-bold rounded-full"></span></div>
+        <div id="modal-actions" class="flex items-center justify-end gap-3 px-6 py-4 flex-wrap" style="border-top:1px solid var(--border);"></div>
     </div>
 </div>
-
 <script>
-function openCommentModal(id) {
-    const c = COMMENTS_DATA[id];
-    if (!c) return;
-
-    document.getElementById('modal-username').textContent = c.username;
-    document.getElementById('modal-date').textContent     = c.date;
-    document.getElementById('modal-content').textContent  = c.content;
-
-    const link = document.getElementById('modal-post-link');
-    link.textContent = c.post_title || 'Voir l\'article';
-    link.href = '<?= BASE_URL ?>/article/' + c.post_slug;
-
-    // Badge statut
-    const badge  = document.getElementById('modal-status-badge');
-    const labels = { approved:'Approuvé', rejected:'Refusé', pending:'En attente' };
-    const styles  = {
-        approved: 'background:#dcfce7;color:#166534;',
-        rejected: 'background:#fee2e2;color:#991b1b;',
-        pending:  'background:#fef9c3;color:#854d0e;',
-    };
-    badge.textContent  = labels[c.status] || c.status;
-    badge.style.cssText = styles[c.status] || '';
-
-    // Boutons d'action
-    const actions = document.getElementById('modal-actions');
-    let html = '';
-
-    if (c.status !== 'approved') {
-        html += `<form method="POST" action="<?= BASE_URL ?>/admin/comments/${id}/approve">
-            <input type="hidden" name="_csrf" value="${c.csrf}">
-            <button class="px-4 py-2 text-sm font-semibold rounded-full border border-green-300 text-green-700 hover:bg-green-50 transition-colors">
-                ✓ Approuver
-            </button></form>`;
-    }
-    if (c.status !== 'rejected') {
-        html += `<form method="POST" action="<?= BASE_URL ?>/admin/comments/${id}/reject">
-            <input type="hidden" name="_csrf" value="${c.csrf}">
-            <button class="px-4 py-2 text-sm font-semibold rounded-full border border-yellow-300 text-yellow-700 hover:bg-yellow-50 transition-colors">
-                ✗ Refuser
-            </button></form>`;
-    }
-    html += `<form method="POST" action="<?= BASE_URL ?>/admin/comments/${id}/delete"
-              onsubmit="return confirm('Supprimer ce commentaire définitivement ?')">
-        <input type="hidden" name="_csrf" value="${c.csrf}">
-        <button class="px-4 py-2 text-sm font-semibold rounded-full border border-red-200 text-red-600 hover:bg-red-50 transition-colors">
-            🗑 Supprimer
-        </button></form>`;
-
-    actions.innerHTML = html;
-
-    // Afficher la modale
-    const modal = document.getElementById('comment-modal');
-    modal.style.display = 'flex';
+function openCommentModal(id){
+    const c=COMMENTS_DATA[id];if(!c)return;
+    document.getElementById('modal-username').textContent=c.username;
+    document.getElementById('modal-date').textContent=c.date;
+    document.getElementById('modal-content').textContent=c.content;
+    const lnk=document.getElementById('modal-post-link');lnk.textContent=c.post_title||"Voir";lnk.href='<?=BASE_URL?>/article/'+c.post_slug;
+    const b=document.getElementById('modal-status-badge');
+    const ls={approved:'Approuvé',rejected:'Refusé',pending:'En attente'};
+    const ss={approved:'background:#dcfce7;color:#166534;',rejected:'background:#fee2e2;color:#991b1b;',pending:'background:#fef9c3;color:#854d0e;'};
+    b.textContent=ls[c.status]||c.status;b.style.cssText=ss[c.status]||'';
+    const a=document.getElementById('modal-actions');let h='';
+    if(c.status!=='approved')h+=`<form method="POST" action="<?=BASE_URL?>/admin/comments/${id}/approve"><input type="hidden" name="_csrf" value="${c.csrf}"><button class="px-4 py-2 text-sm font-semibold rounded-full border border-green-300 text-green-700 hover:bg-green-50">✓ Approuver</button></form>`;
+    if(c.status!=='rejected')h+=`<form method="POST" action="<?=BASE_URL?>/admin/comments/${id}/reject"><input type="hidden" name="_csrf" value="${c.csrf}"><button class="px-4 py-2 text-sm font-semibold rounded-full border border-yellow-300 text-yellow-700 hover:bg-yellow-50">✗ Refuser</button></form>`;
+    h+=`<form method="POST" action="<?=BASE_URL?>/admin/comments/${id}/delete" onsubmit="return confirm('Supprimer ?')"><input type="hidden" name="_csrf" value="${c.csrf}"><button class="px-4 py-2 text-sm font-semibold rounded-full border border-red-200 text-red-600 hover:bg-red-50">🗑 Supprimer</button></form>`;
+    a.innerHTML=h;
+    document.getElementById('comment-modal').style.display='flex';
 }
-
-function closeCommentModal() {
-    document.getElementById('comment-modal').style.display = 'none';
-}
-
-// Clic sur le fond → fermer
-document.getElementById('comment-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeCommentModal();
-});
-
-// Touche Échap → fermer
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeCommentModal();
-});
+function closeCommentModal(){document.getElementById('comment-modal').style.display='none';}
+document.getElementById('comment-modal').addEventListener('click',function(e){if(e.target===this)closeCommentModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCommentModal();});
 </script>

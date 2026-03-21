@@ -1,9 +1,9 @@
 <?php
 use App\Core\Auth;
 use App\Core\Csrf;
-
+ 
 $pageTitle = htmlspecialchars($post['title']) . ' — Bienvenue à Angoulême';
-
+ 
 if (!function_exists('dateFr')) {
     function dateFr(string $date): string {
         $mois = ['','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -12,15 +12,11 @@ if (!function_exists('dateFr')) {
     }
 }
 ?>
-
+ 
 <div class="max-w-3xl mx-auto space-y-10">
-
-<!-- ═══════════════════════════════════════════════
-     EN-TÊTE DE L'ARTICLE
-════════════════════════════════════════════════ -->
+ 
+<!-- EN-TÊTE -->
 <header class="space-y-4">
-
-    <!-- Catégorie + Lieu -->
     <div class="flex flex-wrap items-center gap-2">
         <?php if (!empty($post['category_name'])): ?>
         <a href="<?= BASE_URL ?>/categorie/<?= htmlspecialchars($post['category_slug'] ?? '') ?>"
@@ -42,13 +38,11 @@ if (!function_exists('dateFr')) {
         </span>
         <?php endif; ?>
     </div>
-
-    <!-- Titre -->
+ 
     <h1 class="font-display text-3xl md:text-4xl font-black leading-tight" style="color:var(--text)">
         <?= htmlspecialchars($post['title']) ?>
     </h1>
-
-    <!-- Auteur + Date + Partage -->
+ 
     <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0"
@@ -64,158 +58,92 @@ if (!function_exists('dateFr')) {
                 </div>
             </div>
         </div>
-
-        <!-- Boutons partage -->
         <div class="flex items-center gap-2">
             <span class="text-xs font-semibold mr-1" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">Partager</span>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode((isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>"
+            <a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode((isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) ?>"
                target="_blank" rel="noopener"
                class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all hover:scale-110"
-               style="background:#1877f2;" title="Partager sur Facebook">f</a>
-            <a href="https://twitter.com/intent/tweet?url=<?= urlencode((isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) ?>&text=<?= urlencode($post['title']) ?>"
+               style="background:#1877f2;">f</a>
+            <a href="https://twitter.com/intent/tweet?url=<?= urlencode((isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']) ?>&text=<?= urlencode($post['title']) ?>"
                target="_blank" rel="noopener"
                class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold transition-all hover:scale-110"
-               style="background:#000;" title="Partager sur X">𝕏</a>
+               style="background:#000;">𝕏</a>
             <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>showToast('Lien copié !'))"
                     class="w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all hover:scale-110"
-                    style="background:var(--bg2);color:var(--text2);border:1px solid var(--border);" title="Copier le lien">🔗</button>
+                    style="background:var(--bg2);color:var(--text2);border:1px solid var(--border);">🔗</button>
         </div>
     </div>
 </header>
-
-<!-- ═══════════════════════════════════════════════
-     IMAGE PRINCIPALE
-════════════════════════════════════════════════ -->
-<?php
-$thumb = !empty($post['thumbnail'])
-    ? htmlspecialchars($post['thumbnail'])
-    : BASE_URL . '/assets/images/visuel_à_venir.jpg';
-?>
+ 
+<!-- IMAGE PRINCIPALE -->
+<?php $thumb = !empty($post['thumbnail']) ? htmlspecialchars($post['thumbnail']) : BASE_URL.'/assets/images/visuel_à_venir.jpg'; ?>
 <div class="rounded-2xl overflow-hidden" style="aspect-ratio:16/9;background:var(--bg2);">
-    <img src="<?= $thumb ?>"
-         alt="<?= htmlspecialchars($post['title']) ?>"
-         class="w-full h-full object-cover">
+    <img src="<?= $thumb ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="w-full h-full object-cover">
 </div>
-
-<!-- ═══════════════════════════════════════════════
-     CONTENU DE L'ARTICLE (sections par blocs)
-════════════════════════════════════════════════ -->
+ 
+<!-- CONTENU -->
 <div class="article-body surface rounded-2xl p-6 md:p-10 space-y-6"
      style="font-family:'Source Sans 3',sans-serif;font-size:1rem;line-height:1.8;color:var(--text);">
-
     <?php if (!empty($sections)): ?>
         <?php foreach ($sections as $section): ?>
         <?php $type = $section['type']; ?>
-
         <?php if ($type === 'text'): ?>
-            <?php
-            $text = $section['content'] ?? '';
-            $paragraphes = array_filter(explode("\n\n", $text));
-            foreach ($paragraphes as $para):
-            ?>
+            <?php foreach (array_filter(explode("\n\n", $section['content'] ?? '')) as $para): ?>
             <p><?= nl2br(htmlspecialchars(trim($para))) ?></p>
             <?php endforeach; ?>
-
         <?php elseif ($type === 'title'): ?>
             <h2><?= htmlspecialchars($section['content'] ?? '') ?></h2>
-
         <?php elseif ($type === 'quote'): ?>
-            <blockquote>
-                <?= nl2br(htmlspecialchars($section['content'] ?? '')) ?>
-            </blockquote>
-
-        <?php elseif ($type === 'image'): ?>
-            <?php if (!empty($section['media_url'])): ?>
+            <blockquote><?= nl2br(htmlspecialchars($section['content'] ?? '')) ?></blockquote>
+        <?php elseif ($type === 'image' && !empty($section['media_url'])): ?>
             <figure>
-                <img src="<?= htmlspecialchars($section['media_url']) ?>"
-                     alt="<?= htmlspecialchars($section['content'] ?? '') ?>"
-                     class="w-full rounded-xl">
+                <img src="<?= htmlspecialchars($section['media_url']) ?>" alt="<?= htmlspecialchars($section['content'] ?? '') ?>" class="w-full rounded-xl">
                 <?php if (!empty($section['content'])): ?>
-                <figcaption class="text-center text-sm mt-2"
-                            style="color:var(--muted);font-style:italic;">
-                    <?= htmlspecialchars($section['content']) ?>
-                </figcaption>
+                <figcaption class="text-center text-sm mt-2" style="color:var(--muted);font-style:italic;"><?= htmlspecialchars($section['content']) ?></figcaption>
                 <?php endif; ?>
             </figure>
-            <?php endif; ?>
-
-        <?php elseif ($type === 'video'): ?>
-            <?php if (!empty($section['media_url'])): ?>
+        <?php elseif ($type === 'video' && !empty($section['media_url'])): ?>
             <?php
             $url = $section['media_url'];
-            // Détecter YouTube
             preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $url, $yt);
-            // Détecter Vimeo
             preg_match('/vimeo\.com\/(\d+)/', $url, $vi);
             ?>
             <div class="rounded-xl overflow-hidden" style="aspect-ratio:16/9;background:#000;">
                 <?php if (!empty($yt[1])): ?>
-                <iframe src="https://www.youtube.com/embed/<?= $yt[1] ?>"
-                        width="100%" height="100%"
-                        frameborder="0" allowfullscreen
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        style="display:block;width:100%;height:100%;"></iframe>
+                <iframe src="https://www.youtube.com/embed/<?= $yt[1] ?>" width="100%" height="100%" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="display:block;width:100%;height:100%;"></iframe>
                 <?php elseif (!empty($vi[1])): ?>
-                <iframe src="https://player.vimeo.com/video/<?= $vi[1] ?>"
-                        width="100%" height="100%"
-                        frameborder="0" allowfullscreen
-                        style="display:block;width:100%;height:100%;"></iframe>
+                <iframe src="https://player.vimeo.com/video/<?= $vi[1] ?>" width="100%" height="100%" frameborder="0" allowfullscreen style="display:block;width:100%;height:100%;"></iframe>
                 <?php else: ?>
-                <!-- URL vidéo directe (mp4, etc.) -->
-                <video controls class="w-full h-full" style="display:block;">
-                    <source src="<?= htmlspecialchars($url) ?>">
-                    Votre navigateur ne supporte pas la lecture vidéo.
-                </video>
+                <video controls class="w-full h-full" style="display:block;"><source src="<?= htmlspecialchars($url) ?>">Votre navigateur ne supporte pas la lecture vidéo.</video>
                 <?php endif; ?>
             </div>
-            <?php if (!empty($section['content'])): ?>
-            <p class="text-center text-sm" style="color:var(--muted);font-style:italic;">
-                <?= htmlspecialchars($section['content']) ?>
-            </p>
-            <?php endif; ?>
-            <?php endif; ?>
-
-        <?php elseif ($type === 'gallery'): ?>
-            <?php if (!empty($section['media_url'])): ?>
+        <?php elseif ($type === 'gallery' && !empty($section['media_url'])): ?>
             <?php $imgs = array_filter(array_map('trim', explode(',', $section['media_url']))); ?>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <?php foreach ($imgs as $img): ?>
                 <div class="rounded-xl overflow-hidden" style="aspect-ratio:4/3;background:var(--bg2);">
-                    <img src="<?= htmlspecialchars($img) ?>"
-                         alt="" class="w-full h-full object-cover">
+                    <img src="<?= htmlspecialchars($img) ?>" alt="" class="w-full h-full object-cover">
                 </div>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?>
-
         <?php endif; ?>
         <?php endforeach; ?>
-
     <?php elseif (!empty($post['content'])): ?>
         <?php
-        // Fallback : contenu champ content (anciens articles)
         $rawContent = $post['content'];
         if (strip_tags($rawContent) === $rawContent) {
-            $paragraphes = array_filter(explode("\n\n", $rawContent));
-            foreach ($paragraphes as $para) {
+            foreach (array_filter(explode("\n\n", $rawContent)) as $para) {
                 echo '<p>' . nl2br(htmlspecialchars(trim($para))) . '</p>';
             }
-        } else {
-            echo $rawContent;
-        }
+        } else { echo $rawContent; }
         ?>
     <?php else: ?>
         <p style="color:var(--muted);font-style:italic;">Aucun contenu pour cet article.</p>
     <?php endif; ?>
-
 </div>
-
-<!-- ═══════════════════════════════════════════════
-     PIED D'ARTICLE : auteur, date, catégorie, lieu, tags, likes
-════════════════════════════════════════════════ -->
+ 
+<!-- PIED D'ARTICLE -->
 <div class="surface rounded-2xl p-6 space-y-4">
-
-    <!-- Ligne auteur / date / likes -->
     <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold shrink-0"
@@ -227,13 +155,10 @@ $thumb = !empty($post['thumbnail'])
                 <div class="text-xs" style="color:var(--muted)"><?= dateFr($post['created_at'] ?? date('Y-m-d')) ?></div>
             </div>
         </div>
-
-        <!-- Like -->
         <?php if (Auth::check()): ?>
         <form method="POST" action="<?= BASE_URL ?>/article/<?= $post['slug'] ?>/like" style="display:inline;">
             <input type="hidden" name="_csrf" value="<?= Csrf::generate() ?>">
-            <button type="submit"
-                    class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105"
+            <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105"
                     style="background:var(--bg2);border:1px solid var(--border);color:var(--text2);">
                 <?= ($post['user_has_liked'] ?? false) ? '❤️' : '🤍' ?>
                 <span><?= $post['like_count'] ?? 0 ?> j'aime</span>
@@ -246,8 +171,6 @@ $thumb = !empty($post['thumbnail'])
         </span>
         <?php endif; ?>
     </div>
-
-    <!-- Catégorie + lieu -->
     <div class="flex flex-wrap gap-2" style="border-top:1px solid var(--border);padding-top:1rem;">
         <?php if (!empty($post['category_name'])): ?>
         <a href="<?= BASE_URL ?>/categorie/<?= htmlspecialchars($post['category_slug'] ?? '') ?>"
@@ -263,14 +186,9 @@ $thumb = !empty($post['thumbnail'])
         </span>
         <?php endif; ?>
     </div>
-
-    <!-- Tags -->
     <?php if (!empty($post['tags'])): ?>
     <div class="flex flex-wrap gap-2">
-        <?php
-        $tags = array_filter(array_map('trim', explode(',', $post['tags'])));
-        foreach (array_slice($tags, 0, 8) as $tag):
-        ?>
+        <?php foreach (array_slice(array_filter(array_map('trim', explode(',', $post['tags']))), 0, 8) as $tag): ?>
         <span class="px-3 py-1 rounded-full text-xs font-medium"
               style="background:var(--bg2);color:var(--text2);border:1px solid var(--border);">
             #<?= htmlspecialchars($tag) ?>
@@ -278,38 +196,33 @@ $thumb = !empty($post['thumbnail'])
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
-
 </div>
-
-<!-- ═══════════════════════════════════════════════
-     COMMENTAIRES
-════════════════════════════════════════════════ -->
+ 
+<!-- COMMENTAIRES -->
 <section class="space-y-6">
-
+ 
     <h2 class="font-display text-2xl font-bold" style="color:var(--text)">
         💬 Commentaires
         <?php if (!empty($comments)): ?>
         <span class="text-base font-normal ml-2" style="color:var(--muted)">(<?= count($comments) ?>)</span>
         <?php endif; ?>
     </h2>
-
+ 
     <?php if (!empty($comments)): ?>
     <div class="space-y-4">
         <?php foreach ($comments as $i => $comment): ?>
-        <div class="flex gap-4" style="padding-left:<?= $i % 3 * 16 ?>px;">
-            <!-- Avatar -->
+        <!-- ✅ Plus de padding-left variable — tous alignés à gauche -->
+        <div class="flex gap-4">
             <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 self-start mt-1"
-                 style="background:linear-gradient(135deg,
-                    <?= ['#1d8fd8,#22d3ee','#3fb950,#22d3ee','#bc8cff,#1d8fd8','#d29922,#f85149'][$i % 4] ?>)">
+                 style="background:linear-gradient(135deg,<?= ['#1d8fd8,#22d3ee','#3fb950,#22d3ee','#bc8cff,#1d8fd8','#d29922,#f85149'][$i % 4] ?>)">
                 <?= strtoupper(mb_substr($comment['username'] ?? 'A', 0, 1)) ?>
             </div>
-            <!-- Bulle -->
             <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
                     <span class="text-sm font-bold" style="color:var(--text)"><?= htmlspecialchars($comment['username'] ?? 'Anonyme') ?></span>
                     <span class="text-xs" style="color:var(--muted)"><?= dateFr($comment['created_at']) ?></span>
                 </div>
-                <div class="p-4 rounded-xl rounded-tl-none text-sm leading-relaxed"
+                <div class="p-4 rounded-xl text-sm leading-relaxed"
                      style="background:var(--bg2);border:1px solid var(--border);color:var(--text2);">
                     <?= nl2br(htmlspecialchars($comment['content'])) ?>
                 </div>
@@ -324,8 +237,7 @@ $thumb = !empty($post['thumbnail'])
         <p class="text-sm mt-1">Soyez le premier à donner votre avis !</p>
     </div>
     <?php endif; ?>
-
-    <!-- ── Formulaire commentaire (connecté uniquement) -->
+ 
     <?php if (Auth::check()): ?>
     <div class="surface rounded-2xl p-6 space-y-4">
         <h3 class="font-display text-lg font-bold" style="color:var(--text)">Laisser un commentaire</h3>
@@ -338,9 +250,7 @@ $thumb = !empty($post['thumbnail'])
                       onfocus="this.style.borderColor='#1d8fd8'"
                       onblur="this.style.borderColor='var(--border)'"></textarea>
             <div class="flex justify-end">
-                <button type="submit" class="btn-primary px-6 py-2.5">
-                    Publier le commentaire →
-                </button>
+                <button type="submit" class="btn-primary px-6 py-2.5">Publier le commentaire →</button>
             </div>
         </form>
         <p class="text-xs" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
@@ -352,22 +262,16 @@ $thumb = !empty($post['thumbnail'])
         <p class="text-sm mb-3" style="color:var(--text2);font-family:'Source Sans 3',sans-serif;">
             Vous devez être connecté pour laisser un commentaire.
         </p>
-        <a href="<?= BASE_URL ?>/login" class="btn-primary inline-block px-6 py-2.5">
-            Se connecter →
-        </a>
+        <a href="<?= BASE_URL ?>/login" class="btn-primary inline-block px-6 py-2.5">Se connecter →</a>
     </div>
     <?php endif; ?>
-
+ 
 </section>
-
 </div>
-
-<!-- Toast copie lien -->
+ 
 <div id="toast" class="fixed bottom-6 right-6 px-4 py-2 rounded-xl text-white text-sm font-semibold opacity-0 pointer-events-none transition-all duration-300"
-     style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);z-index:9999;">
-    Lien copié !
-</div>
-
+     style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);z-index:9999;">Lien copié !</div>
+ 
 <script>
 function showToast(msg) {
     const t = document.getElementById('toast');
@@ -377,71 +281,20 @@ function showToast(msg) {
     setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(0)'; }, 2500);
 }
 </script>
-
+ 
 <style>
-/* ── Styles typographiques pour le corps de l'article ── */
-.article-body h2 {
-    font-family: 'Lexend', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-top: 2rem;
-    margin-bottom: .75rem;
-    padding-bottom: .4rem;
-    border-bottom: 2px solid;
-    border-image: linear-gradient(135deg,#1d8fd8,#22d3ee) 1;
-}
-.article-body h3 {
-    font-family: 'Lexend', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-top: 1.5rem;
-    margin-bottom: .5rem;
-}
-.article-body p { margin-bottom: .75rem; }
-.article-body ul, .article-body ol {
-    padding-left: 1.5rem;
-    margin-bottom: .75rem;
-    color: var(--text2);
-}
-.article-body ul { list-style: disc; }
-.article-body ol { list-style: decimal; }
-.article-body li { margin-bottom: .3rem; }
-.article-body blockquote {
-    margin: 1.5rem 0;
-    padding: 1.25rem 1.5rem;
-    border-left: 4px solid #1d8fd8;
-    border-radius: 0 .75rem .75rem 0;
-    background: var(--bg2);
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--text2);
-}
-.article-body blockquote strong {
-    display: block;
-    margin-top: .75rem;
-    font-style: normal;
-    font-size: .85rem;
-    color: var(--muted);
-}
-.article-body img {
-    width: 100%;
-    border-radius: .75rem;
-    margin: 1rem 0;
-    object-fit: cover;
-}
-.article-body a {
-    color: #1d8fd8;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-.article-body a:hover { color: #22d3ee; }
-.article-body strong { color: var(--text); font-weight: 700; }
-.article-body em { font-style: italic; color: var(--text2); }
-.article-body hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
-}
+.article-body h2 { font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--text);margin-top:2rem;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:2px solid;border-image:linear-gradient(135deg,#1d8fd8,#22d3ee) 1; }
+.article-body h3 { font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:.5rem; }
+.article-body p { margin-bottom:.75rem; }
+.article-body ul,.article-body ol { padding-left:1.5rem;margin-bottom:.75rem;color:var(--text2); }
+.article-body ul { list-style:disc; }
+.article-body ol { list-style:decimal; }
+.article-body li { margin-bottom:.3rem; }
+.article-body blockquote { margin:1.5rem 0;padding:1.25rem 1.5rem;border-left:4px solid #1d8fd8;border-radius:0 .75rem .75rem 0;background:var(--bg2);font-style:italic;font-size:1.05rem;color:var(--text2); }
+.article-body img { width:100%;border-radius:.75rem;margin:1rem 0;object-fit:cover; }
+.article-body a { color:#1d8fd8;text-decoration:underline;text-underline-offset:3px; }
+.article-body a:hover { color:#22d3ee; }
+.article-body strong { color:var(--text);font-weight:700; }
+.article-body em { font-style:italic;color:var(--text2); }
+.article-body hr { border:none;border-top:1px solid var(--border);margin:2rem 0; }
 </style>
