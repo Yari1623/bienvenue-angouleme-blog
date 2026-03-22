@@ -1,8 +1,14 @@
+# public/.htaccess
+# Redirige toutes les requêtes vers index.php sauf fichiers/dossiers existants
+
+# Désactive la navigation dans les dossiers (sécurité)
+Options -Indexes
+
 RewriteEngine On
 
-# Si fichier ou dossier existe → ne pas rediriger
+# Si fichier ou dossier physique existe → ne pas rediriger
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Tout le reste → index.php
+# Tout le reste → index.php (router PHP)
 RewriteRule ^ index.php [QSA,L]

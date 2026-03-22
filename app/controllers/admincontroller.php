@@ -1,26 +1,35 @@
 <?php
+// app/controllers/AdminController.php
  
 namespace App\Controllers;
  
 use App\Core\Controller;
-use App\Core\Auth;
 use App\Core\Database;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
-use App\Models\Event;
-use App\Models\Category;
  
+/**
+ * AdminController — Tableau de bord administration.
+ *
+ * Collecte toutes les statistiques et données pour le dashboard :
+ * - Cartes stats (articles, commentaires, utilisateurs, événements)
+ * - Top 5 articles les plus vus
+ * - Commentaires en attente
+ * - 4 graphiques Chart.js (publications/mois, statuts, catégories, inscriptions)
+ *
+ * CORRECTION passe 6 : suppression des imports Event et Category inutilisés.
+ */
 class AdminController extends Controller
 {
     public function index(): void
     {
-        $pdo         = Database::getPDO();
-        $postModel   = new Post();
-        $commentModel= new Comment();
-        $userModel   = new User();
+        $pdo          = Database::getPDO();
+        $postModel    = new Post();
+        $commentModel = new Comment();
+        $userModel    = new User();
  
-        // ── Stats cartes
+        // ── Cartes statistiques ────────────────────────────
         $stats = [
             'published_posts'  => $this->count($pdo, "SELECT COUNT(*) FROM posts WHERE status='published'"),
             'draft_posts'      => $this->count($pdo, "SELECT COUNT(*) FROM posts WHERE status='draft'"),
@@ -32,7 +41,7 @@ class AdminController extends Controller
             'total_events'     => $this->count($pdo, "SELECT COUNT(*) FROM events"),
         ];
  
-        // ── Top articles les plus vus
+        // ── Top 5 articles les plus vus ────────────────────
         $popularPosts = $pdo->query("
             SELECT p.id, p.title, p.slug, COUNT(pv.id) AS view_count
             FROM posts p
@@ -43,10 +52,10 @@ class AdminController extends Controller
             LIMIT 5
         ")->fetchAll();
  
-        // ── Commentaires en attente
+        // ── Commentaires en attente (pour widget dashboard) ─
         $pendingComments = $commentModel->getPending();
  
-        // ── Graphique 1 : publications par mois (12 derniers mois)
+        // ── Graphique 1 : publications publiées par mois ───
         $chartRows = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%b %Y') AS label,
                    DATE_FORMAT(created_at, '%Y-%m') AS ym,
@@ -60,17 +69,16 @@ class AdminController extends Controller
         $chartLabels = json_encode(array_column($chartRows, 'label'));
         $chartData   = json_encode(array_map('intval', array_column($chartRows, 'total')));
  
-        // ── Graphique 2 : répartition par catégorie
-        $catRows = $pdo->query("
+        // ── Graphique 2 : répartition par catégorie ────────
+        $categoryStats = $pdo->query("
             SELECT c.name, COUNT(p.id) AS count
             FROM categories c
             LEFT JOIN posts p ON p.category_id = c.id AND p.status = 'published'
             GROUP BY c.id, c.name
             ORDER BY count DESC
         ")->fetchAll();
-        $categoryStats = $catRows;
  
-        // ── Graphique 3 : inscriptions par mois admins vs membres (12 derniers mois)
+        // ── Graphique 3 : inscriptions admins vs membres ───
         $userRows = $pdo->query("
             SELECT DATE_FORMAT(created_at, '%b %Y') AS label,
                    DATE_FORMAT(created_at, '%Y-%m') AS ym,
@@ -82,21 +90,23 @@ class AdminController extends Controller
             ORDER BY ym ASC
         ")->fetchAll();
  
-        // Construire les labels et datasets séparés
-        $usersMonths = [];
+        // Construction des datasets par mois
+        $usersMonths    = [];
+        $adminsByMonth  = [];
+        $membersByMonth = [];
+ 
         foreach ($userRows as $r) {
             $usersMonths[$r['ym']] = $r['label'];
+            if ($r['role'] === 'admin') {
+                $adminsByMonth[$r['ym']]  = (int)$r['total'];
+            } else {
+                $membersByMonth[$r['ym']] = (int)$r['total'];
+            }
         }
-        ksort($usersMonths);
+        ksort($usersMonths); // Tri chronologique
  
         $adminsData  = [];
         $membersData = [];
-        $adminsByMonth  = [];
-        $membersByMonth = [];
-        foreach ($userRows as $r) {
-            if ($r['role'] === 'admin')  $adminsByMonth[$r['ym']]  = (int)$r['total'];
-            else                          $membersByMonth[$r['ym']] = (int)$r['total'];
-        }
         foreach (array_keys($usersMonths) as $ym) {
             $adminsData[]  = $adminsByMonth[$ym]  ?? 0;
             $membersData[] = $membersByMonth[$ym] ?? 0;
@@ -119,6 +129,10 @@ class AdminController extends Controller
         ));
     }
  
+    /**
+     * Exécute un COUNT(*) SQL simple et retourne le résultat en int.
+     * Évite de répéter le même code pour chaque stat.
+     */
     private function count(\PDO $pdo, string $sql): int
     {
         return (int) $pdo->query($sql)->fetchColumn();

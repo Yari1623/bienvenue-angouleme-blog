@@ -2,65 +2,57 @@
 // views/admin/categories/index.php
 $pageTitle = 'Gestion des catégories — Admin';
 ?>
-
 <div class="space-y-6">
-
-    <div class="flex items-center justify-between border-b-2 border-ink pb-4">
-        <h2 class="font-display text-2xl font-black text-ink">Catégories</h2>
-        <div class="flex items-center gap-3">
-            <a href="<?= BASE_URL ?>/admin/categories/create"
-               class="px-5 py-2.5 bg-accent text-paper font-body font-semibold text-sm hover:bg-ink transition-colors">
-                + Nouvelle catégorie
-            </a>
-            <a href="<?= BASE_URL ?>/admin" class="text-sm font-body text-muted hover:text-accent transition-colors">← Dashboard</a>
+    <div class="flex flex-wrap items-start justify-between gap-3 pb-4" style="border-bottom:2px solid var(--border)">
+        <h2 class="font-display text-2xl font-black" style="color:var(--text)">Catégories</h2>
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="<?= BASE_URL ?>/admin/categories/create" class="btn-primary px-4 py-2 text-sm">+ Nouvelle catégorie</a>
+            <a href="<?= BASE_URL ?>/admin" class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
         </div>
     </div>
-
+ 
     <?php if (empty($categories)): ?>
-    <div class="text-center py-16 text-muted font-body">
-        <p class="text-4xl mb-3">🏷</p>
-        <p>Aucune catégorie.</p>
+    <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
+        <p class="text-4xl mb-3">🏷</p><p>Aucune catégorie.</p>
     </div>
     <?php else: ?>
-
-    <div class="bg-white border border-border overflow-hidden">
-        <table class="w-full text-sm font-body">
-            <thead class="bg-ink text-paper">
-                <tr>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">Nom</th>
-                    <th class="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Slug</th>
-                    <th class="text-center px-4 py-3 text-xs font-semibold uppercase tracking-wider">Articles</th>
-                    <th class="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider">Actions</th>
+ 
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:.75rem;border:1px solid var(--border);">
+        <table style="width:100%;min-width:320px;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
+            <thead>
+                <tr style="background:linear-gradient(135deg,#1d8fd8,#22d3ee)">
+                    <th style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Nom</th>
+                    <th style="text-align:center;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Articles</th>
+                    <!-- Slug masqué sur mobile -->
+                    <th class="hidden md:table-cell" style="text-align:left;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Slug</th>
+                    <th style="text-align:right;padding:.75rem 1rem;font-size:.7rem;font-weight:700;text-transform:uppercase;color:white;white-space:nowrap;">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-border">
-                <?php foreach ($categories as $cat): ?>
-                <tr class="hover:bg-paper/50 transition-colors">
-                    <td class="px-4 py-3 font-semibold text-ink">
-                        <a href="<?= BASE_URL ?>/categorie/<?= htmlspecialchars($cat['slug']) ?>"
-                           target="_blank"
-                           class="hover:text-accent transition-colors">
-                            <?= htmlspecialchars($cat['name']) ?>
-                        </a>
+            <tbody>
+                <?php foreach ($categories as $i => $cat): ?>
+                <tr style="background:<?= $i%2===0?'var(--surface)':'var(--bg2)' ?>;border-bottom:1px solid var(--border);">
+                    <td style="padding:.75rem 1rem;font-weight:600;color:var(--text);"><?= htmlspecialchars($cat['name']) ?></td>
+                    <td style="padding:.75rem 1rem;text-align:center;">
+                        <span style="padding:.2rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);">
+                            <?= $cat['post_count'] ?? 0 ?>
+                        </span>
                     </td>
-                    <td class="px-4 py-3 hidden md:table-cell text-muted text-xs font-mono">
-                        <?= htmlspecialchars($cat['slug']) ?>
-                    </td>
-                    <td class="px-4 py-3 text-center text-muted">
-                        <?= $cat['post_count'] ?? 0 ?>
-                    </td>
-                    <td class="px-4 py-3">
-                        <div class="flex items-center justify-end gap-2">
+                    <!-- Slug masqué sur mobile -->
+                    <td class="hidden md:table-cell" style="padding:.75rem 1rem;font-size:.75rem;color:var(--muted);"><?= htmlspecialchars($cat['slug']) ?></td>
+                    <td style="padding:.75rem 1rem;text-align:right;">
+                        <div style="display:flex;gap:.3rem;justify-content:flex-end;align-items:center;">
                             <a href="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/edit"
-                               class="px-3 py-1.5 text-xs font-semibold border border-border hover:border-ink transition-colors">
-                                Éditer
-                            </a>
-                            <form method="POST" action="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/delete"
-                                  class="inline"
-                                  onsubmit="return confirm('Supprimer cette catégorie ?')">
+                               style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #1d8fd8;color:#1d8fd8;text-decoration:none;white-space:nowrap;"
+                               onmouseover="this.style.background='#1d8fd8';this.style.color='white'"
+                               onmouseout="this.style.background='';this.style.color='#1d8fd8'">Éditer</a>
+                            <form method="POST" action="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/delete" style="display:inline;" onsubmit="return confirm('Supprimer ?')">
                                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                                <button class="px-3 py-1.5 text-xs font-semibold border border-red-200 text-accent hover:bg-red-50 transition-colors">
-                                    Supprimer
+                                <!-- Icône seule sur mobile, texte sur desktop -->
+                                <button style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;white-space:nowrap;"
+                                    onmouseover="this.style.background='#dc2626';this.style.color='white'"
+                                    onmouseout="this.style.background='transparent';this.style.color='#dc2626'">
+                                    <span class="hidden md:inline">Supprimer</span>
+                                    <span class="md:hidden">🗑</span>
                                 </button>
                             </form>
                         </div>
@@ -70,6 +62,5 @@ $pageTitle = 'Gestion des catégories — Admin';
             </tbody>
         </table>
     </div>
-
     <?php endif; ?>
 </div>

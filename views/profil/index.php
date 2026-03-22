@@ -41,7 +41,7 @@ $user = Auth::user();
         <?php
         $stats = [
             ['icon'=>'❤️',  'label'=>'Likes donnés',      'value'=> count($userLikes ?? [])],
-            ['icon'=>'💬',  'label'=>'Commentaires',       'value'=> count($userComments ?? [])],
+            ['icon'=>'💬',  'label'=>'Commentaires',       'value'=> $userComments ?? 0],
             ['icon'=>'📖',  'label'=>'Articles lus',       'value'=> count($recentViews ?? [])],
             ['icon'=>'📅',  'label'=>'Événements suivis',  'value'=> count($interestedEvents ?? [])],
         ];
