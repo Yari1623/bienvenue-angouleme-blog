@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System — Bienvenue à Angoulême</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f0f4f8;
+    --bg2:     #e2eaf2;
+    --surface: #ffffff;
+    --border:  #c8d8e8;
+    --text:    #1e2d3d;
+    --text2:   #4a6275;
+    --muted:   #7a95a8;
+    --brand1:  #1d8fd8;
+    --brand2:  #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── Navigation du design system ── */
+  .ds-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--text);
+    padding: .75rem 2rem;
+    display: flex; align-items: center; gap: 2rem;
+    overflow-x: auto;
+  }
+  .ds-nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900; font-size: 1rem;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .ds-nav a {
+    color: rgba(255,255,255,.6); text-decoration: none;
+    font-size: .8rem; font-weight: 600; white-space: nowrap;
+    transition: color .2s;
+  }
+  .ds-nav a:hover { color: white; }
+
+  /* ── Layout ── */
+  .ds-page { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+  .ds-section { margin-bottom: 4rem; }
+  .ds-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--text); margin-bottom: .5rem;
+    padding-bottom: .75rem;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(135deg, var(--brand1), var(--brand2)) 1;
+  }
+  .ds-section-sub {
+    font-size: .875rem; color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .ds-grid { display: grid; gap: 1.5rem; }
+  .ds-grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .ds-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .ds-grid-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .ds-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1.5rem;
+  }
+  .ds-label {
+    font-size: .7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin-bottom: .5rem;
+  }
+  .ds-value {
+    font-family: 'Source Code Pro', monospace;
+    font-size: .8rem; color: var(--brand1);
+    background: rgba(29,143,216,.08);
+    padding: .2rem .5rem; border-radius: .25rem;
+    display: inline-block; margin-top: .25rem;
+  }
+
+  /* ── Hero ── */
+  .ds-hero {
+    background: var(--text);
+    border-radius: 1rem;
+    padding: 3rem;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .ds-hero::before {
+    content: '';
+    position: absolute; top: -50%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(29,143,216,.3), transparent 70%);
+    border-radius: 50%;
+  }
+  .ds-hero::after {
+    content: '';
+    position: absolute; bottom: -30%; left: 20%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(34,211,238,.2), transparent 70%);
+    border-radius: 50%;
+  }
+  .ds-hero-content { position: relative; z-index: 1; }
+  .ds-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900; line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--brand2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  .ds-hero p {
+    color: rgba(255,255,255,.6);
+    font-size: 1rem; max-width: 500px;
+    margin-bottom: 1.5rem;
+  }
+  .ds-hero-meta {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+  }
+  .ds-hero-meta-item { color: rgba(255,255,255,.5); font-size: .8rem; }
+  .ds-hero-meta-item strong { color: white; display: block; font-size: 1.1rem; }
+
+  /* ── Couleurs ── */
+  .color-swatch {
+    border-radius: .75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  }
+  .color-swatch-preview {
+    height: 100px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .color-swatch-info {
+    background: var(--surface);
+    padding: .75rem 1rem;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 .75rem .75rem;
+  }
+  .color-swatch-name { font-weight: 700; font-size: .875rem; color: var(--text); }
+  .color-swatch-hex { font-size: .75rem; color: var(--muted); font-family: monospace; }
+
+  /* ── Typographie ── */
+  .type-sample {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1.5rem;
+  }
+  .type-display-xl {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem; font-weight: 900; line-height: 1.1;
+    color: var(--text);
+  }
+  .type-display-lg {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; line-height: 1.2;
+    color: var(--text);
+  }
+  .type-display-md {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--text);
+  }
+  .type-display-sm {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.125rem; font-weight: 700;
+    color: var(--text);
+  }
+  .type-body-lg { font-size: 1.125rem; color: var(--text2); }
+  .type-body    { font-size: 1rem; color: var(--text2); }
+  .type-body-sm { font-size: .875rem; color: var(--text2); }
+  .type-caption { font-size: .75rem; color: var(--muted); }
+  .type-label {
+    font-size: .7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted);
+  }
+  .type-sep {
+    border: none; border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  /* ── Gradient ── */
+  .gradient-preview {
+    height: 80px; border-radius: .5rem;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: .875rem;
+    margin-bottom: .75rem;
+  }
+  .gradient-text-preview {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ── Boutons ── */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    color: white; font-weight: 600; font-size: .875rem;
+    padding: .6rem 1.4rem; border-radius: 9999px;
+    border: none; cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    transition: opacity .2s, transform .15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--brand1);
+    border: 2px solid var(--brand1); font-weight: 600; font-size: .875rem;
+    padding: .5rem 1.3rem; border-radius: 9999px;
+    cursor: pointer; font-family: 'Source Sans 3', sans-serif;
+    display: inline-block; transition: all .2s;
+  }
+  .btn-outline:hover {
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    color: white; border-color: transparent;
+  }
+  .btn-ghost {
+    background: transparent; color: var(--text2);
+    border: 2px solid var(--border); font-weight: 600; font-size: .875rem;
+    padding: .5rem 1.3rem; border-radius: 9999px;
+    cursor: pointer; font-family: 'Source Sans 3', sans-serif;
+    display: inline-block; transition: all .2s;
+  }
+  .btn-ghost:hover { border-color: var(--brand1); color: var(--brand1); }
+  .btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white; font-weight: 600; font-size: .875rem;
+    padding: .6rem 1.4rem; border-radius: 9999px;
+    border: none; cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    display: inline-block;
+  }
+  .btn-sm { padding: .35rem .9rem; font-size: .8rem; }
+  .btn-lg { padding: .85rem 2rem; font-size: 1rem; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    padding: .2rem .6rem; border-radius: 9999px;
+    font-size: .7rem; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .badge-brand   { background: linear-gradient(135deg, var(--brand1), var(--brand2)); color: white; }
+  .badge-success { background: #dcfce7; color: #166534; }
+  .badge-warning { background: #fef9c3; color: #854d0e; }
+  .badge-danger  { background: #fee2e2; color: #991b1b; }
+  .badge-muted   { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
+  .badge-admin   { background: rgba(29,143,216,.15); color: var(--brand1); border: 1px solid rgba(29,143,216,.3); }
+
+  /* ── Inputs ── */
+  .ds-input {
+    width: 100%;
+    padding: .65rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: .5rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: .875rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .ds-input:focus { border-color: var(--brand1); }
+  .ds-input-label {
+    display: block;
+    font-size: .75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text2); margin-bottom: .4rem;
+  }
+  .ds-input-group { margin-bottom: 1rem; }
+
+  /* ── Cards ── */
+  .post-card-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .post-card-demo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(29,143,216,.15);
+    border-color: var(--brand1);
+  }
+  .post-card-img {
+    width: 100%; aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #1d8fd8, #22d3ee);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.3);
+    font-size: 3rem;
+  }
+  .post-card-body { padding: 1rem; }
+  .post-card-cat {
+    display: inline-block; margin-bottom: .5rem;
+    padding: .2rem .6rem; border-radius: 9999px;
+    font-size: .7rem; font-weight: 700; color: white;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  }
+  .post-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--text); margin-bottom: .4rem;
+  }
+  .post-card-excerpt {
+    font-size: .8rem; color: var(--text2);
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    margin-bottom: .75rem;
+  }
+  .post-card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: .75rem;
+    border-top: 1px solid var(--border);
+    font-size: .75rem; color: var(--muted);
+  }
+
+  /* ── Flash messages ── */
+  .flash {
+    padding: .75rem 1rem; border-radius: .5rem;
+    font-size: .875rem; margin-bottom: .5rem;
+  }
+  .flash-success { background: #f0fdf4; border-left: 4px solid #22c55e; color: #166534; }
+  .flash-error   { background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; }
+  .flash-info    { background: #eff6ff; border-left: 4px solid var(--brand1); color: #1e40af; }
+
+  /* ── Spacing ── */
+  .spacing-row {
+    display: flex; align-items: flex-end; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .spacing-block {
+    background: linear-gradient(135deg, rgba(29,143,216,.2), rgba(34,211,238,.2));
+    border: 1px solid rgba(29,143,216,.3);
+    border-radius: .25rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; color: var(--brand1); font-weight: 700;
+  }
+
+  /* ── Breakpoints ── */
+  .bp-bar {
+    height: 40px; border-radius: .5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; color: white;
+    margin-bottom: .5rem;
+  }
+
+  /* ── Nav example ── */
+  .nav-demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: .75rem 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .nav-link-demo {
+    position: relative; color: var(--text2);
+    font-weight: 600; font-size: .875rem;
+    padding: .4rem 0; cursor: pointer;
+    text-decoration: none;
+  }
+  .nav-link-demo::after {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(135deg, var(--brand1), var(--brand2));
+    border-radius: 1px;
+  }
+  .nav-link-demo.inactive::after { width: 0; }
+
+  /* ── Toggle ── */
+  .toggle-demo {
+    width: 80px; height: 36px; border-radius: 9999px;
+    position: relative; cursor: pointer; border: none; padding: 0;
+    overflow: hidden;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,.25), inset -2px -2px 5px rgba(255,255,255,.15);
+  }
+  .toggle-track-light {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #87ceeb 0%, #e0f4ff 40%, #fff9c4 70%, #ffe082 100%);
+  }
+  .toggle-track-dark {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1a1035 0%, #2d1b6b 50%, #0f2050 100%);
+  }
+  .toggle-thumb-light {
+    position: absolute; top: 4px; left: 4px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe88a, #ffb300);
+    box-shadow: 2px 2px 6px rgba(0,0,0,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; z-index: 2;
+  }
+  .toggle-thumb-dark {
+    position: absolute; top: 4px; left: 48px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #e8e8ff, #b0b8d8);
+    box-shadow: 2px 2px 6px rgba(0,0,0,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; z-index: 2;
+  }
+
+  /* ── Dark mode preview ── */
+  .dark-preview {
+    background: #0f1923;
+    border-radius: .75rem;
+    padding: 1.5rem;
+    border: 1px solid #243550;
+  }
+
+  /* ── Print ── */
+  @media print {
+    .ds-nav { display: none; }
+    .ds-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="ds-nav">
+  <div class="ds-nav-brand">Design System — BWA</div>
+  <a href="#couleurs">Couleurs</a>
+  <a href="#typographie">Typographie</a>
+  <a href="#boutons">Boutons</a>
+  <a href="#badges">Badges</a>
+  <a href="#formulaires">Formulaires</a>
+  <a href="#composants">Composants</a>
+  <a href="#espacements">Espacements</a>
+  <a href="#dark">Dark Mode</a>
+  <a href="#breakpoints">Breakpoints</a>
+</nav>
+
+<div class="ds-page">
+
+  <!-- Hero -->
+  <div class="ds-hero">
+    <div class="ds-hero-content">
+      <h1>Bienvenue à Angoulême<br>Design System</h1>
+      <p>Charte graphique complète — couleurs, typographie, composants, espacements et breakpoints. Référence pour la réalisation des maquettes Figma.</p>
+      <div class="ds-hero-meta">
+        <div class="ds-hero-meta-item"><strong>v1.0</strong>Mars 2026</div>
+        <div class="ds-hero-meta-item"><strong>Figma</strong>Référence visuelle</div>
+        <div class="ds-hero-meta-item"><strong>DWWM</strong>TP de fin de formation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ COULEURS ══ -->
+  <section class="ds-section" id="couleurs">
+    <h2 class="ds-section-title">Couleurs</h2>
+    <p class="ds-section-sub">Palette complète du projet. Les deux couleurs brand forment le gradient signature.</p>
+
+    <div class="ds-grid ds-grid-4" style="margin-bottom:2rem;">
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:linear-gradient(135deg,#1d8fd8,#22d3ee)">
+          <span style="color:white;font-weight:700;font-size:.8rem;">Gradient Brand</span>
+        </div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Brand Gradient</div>
+          <div class="color-swatch-hex">#1d8fd8 → #22d3ee</div>
+          <div class="color-swatch-hex">135deg</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#1d8fd8"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Brand 1 — Bleu</div>
+          <div class="color-swatch-hex">#1d8fd8</div>
+          <div class="color-swatch-hex">rgb(29, 143, 216)</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#22d3ee"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Brand 2 — Cyan</div>
+          <div class="color-swatch-hex">#22d3ee</div>
+          <div class="color-swatch-hex">rgb(34, 211, 238)</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#1e2d3d"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Text Principal</div>
+          <div class="color-swatch-hex">#1e2d3d</div>
+          <div class="color-swatch-hex">--text</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#4a6275"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Text Secondaire</div>
+          <div class="color-swatch-hex">#4a6275</div>
+          <div class="color-swatch-hex">--text2</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#7a95a8"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Muted</div>
+          <div class="color-swatch-hex">#7a95a8</div>
+          <div class="color-swatch-hex">--muted</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#f0f4f8;border:1px solid #c8d8e8;"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Background</div>
+          <div class="color-swatch-hex">#f0f4f8</div>
+          <div class="color-swatch-hex">--bg</div>
+        </div>
+      </div>
+
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#c8d8e8;"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Border</div>
+          <div class="color-swatch-hex">#c8d8e8</div>
+          <div class="color-swatch-hex">--border</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Couleurs sémantiques -->
+    <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:1rem;">Couleurs sémantiques</h3>
+    <div class="ds-grid ds-grid-4">
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#22c55e"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Succès</div>
+          <div class="color-swatch-hex">#22c55e</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#ef4444"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Danger / Erreur</div>
+          <div class="color-swatch-hex">#ef4444</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#f97316"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Avertissement</div>
+          <div class="color-swatch-hex">#f97316</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-swatch-preview" style="background:#8b5cf6"></div>
+        <div class="color-swatch-info">
+          <div class="color-swatch-name">Info / Accent</div>
+          <div class="color-swatch-hex">#8b5cf6</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TYPOGRAPHIE ══ -->
+  <section class="ds-section" id="typographie">
+    <h2 class="ds-section-title">Typographie</h2>
+    <p class="ds-section-sub">Deux familles de polices. Playfair Display pour les titres (caractère éditorial), Source Sans 3 pour le corps (lisibilité).</p>
+
+    <div class="ds-grid ds-grid-2" style="margin-bottom:2rem;">
+      <div class="ds-card">
+        <div class="ds-label">Police display — Titres</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--text);margin:1rem 0;">Playfair Display</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--text2);font-style:italic;">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 àéèêîôùûç</div>
+        <hr class="type-sep">
+        <div class="ds-label">Graisses utilisées</div>
+        <div style="font-family:'Playfair Display',serif;color:var(--text);">
+          <div style="font-weight:400;font-size:1rem;">Regular 400 — Titre d'article</div>
+          <div style="font-weight:700;font-size:1rem;">Bold 700 — Sous-titre section</div>
+          <div style="font-weight:900;font-size:1rem;">Black 900 — Titre principal</div>
+          <div style="font-weight:400;font-style:italic;font-size:1rem;">Italic 400 — Citation</div>
+        </div>
+        <hr class="type-sep">
+        <div class="ds-value">Google Fonts — Playfair Display</div>
+      </div>
+
+      <div class="ds-card">
+        <div class="ds-label">Police corps — Texte</div>
+        <div style="font-family:'Source Sans 3',sans-serif;font-size:2rem;font-weight:700;color:var(--text);margin:1rem 0;">Source Sans 3</div>
+        <div style="font-family:'Source Sans 3',sans-serif;font-size:1rem;color:var(--text2);">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 àéèêîôùûç</div>
+        <hr class="type-sep">
+        <div class="ds-label">Graisses utilisées</div>
+        <div style="font-family:'Source Sans 3',sans-serif;color:var(--text);">
+          <div style="font-weight:300;font-size:1rem;">Light 300 — Légende</div>
+          <div style="font-weight:400;font-size:1rem;">Regular 400 — Corps de texte</div>
+          <div style="font-weight:600;font-size:1rem;">SemiBold 600 — Navigation, labels</div>
+          <div style="font-weight:700;font-size:1rem;">Bold 700 — Boutons, badges</div>
+        </div>
+        <hr class="type-sep">
+        <div class="ds-value">Google Fonts — Source Sans 3</div>
+      </div>
+    </div>
+
+    <!-- Échelle typographique -->
+    <div class="type-sample">
+      <div class="ds-label" style="margin-bottom:1.5rem;">Échelle typographique complète</div>
+
+      <div class="type-display-xl">Display XL — 3rem / 900 — Titre hero</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 3rem | font-weight: 900 | Playfair Display</div>
+
+      <div class="type-display-lg">Display LG — 2rem / 700 — Titre page</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 2rem | font-weight: 700 | Playfair Display</div>
+
+      <div class="type-display-md">Display MD — 1.5rem / 700 — Titre section</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 1.5rem | font-weight: 700 | Playfair Display</div>
+
+      <div class="type-display-sm">Display SM — 1.125rem / 700 — Titre card</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 1.125rem | font-weight: 700 | Playfair Display</div>
+
+      <hr class="type-sep">
+
+      <div class="type-body-lg">Body LG — 1.125rem / 400 — Introduction, lead</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 1.125rem | Source Sans 3</div>
+
+      <div class="type-body">Body — 1rem / 400 — Corps de texte standard</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 1rem | Source Sans 3</div>
+
+      <div class="type-body-sm">Body SM — 0.875rem / 400 — Texte secondaire, métadonnées</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 0.875rem | Source Sans 3</div>
+
+      <div class="type-caption">Caption — 0.75rem / 400 — Légendes, timestamps</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0 1.25rem;font-family:monospace;">font-size: 0.75rem | Source Sans 3</div>
+
+      <div class="type-label">Label — 0.7rem / 700 / uppercase — Labels de formulaire, en-têtes tableau</div>
+      <div style="color:var(--muted);font-size:.75rem;margin:.25rem 0;font-family:monospace;">font-size: 0.7rem | font-weight: 700 | text-transform: uppercase | letter-spacing: 0.1em</div>
+    </div>
+  </section>
+
+  <!-- ══ GRADIENT ══ -->
+  <section class="ds-section" id="gradient">
+    <h2 class="ds-section-title">Gradient & Texte gradient</h2>
+    <p class="ds-section-sub">Le gradient brand est utilisé sur les boutons primaires, les en-têtes de tableau, les badges et en texte sur les titres.</p>
+    <div class="ds-grid ds-grid-2">
+      <div class="ds-card">
+        <div class="ds-label">Gradient fond</div>
+        <div class="gradient-preview">Boutons · En-têtes · Bandeau</div>
+        <div class="ds-value">background: linear-gradient(135deg, #1d8fd8, #22d3ee)</div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-label">Gradient texte</div>
+        <div class="gradient-text-preview" style="margin:1rem 0;">Bienvenue à Angoulême</div>
+        <div class="ds-value">-webkit-background-clip: text · -webkit-text-fill-color: transparent</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BOUTONS ══ -->
+  <section class="ds-section" id="boutons">
+    <h2 class="ds-section-title">Boutons</h2>
+    <p class="ds-section-sub">Tous les boutons ont un border-radius de 9999px (forme pill). Trois variantes + une variante danger.</p>
+
+    <div class="ds-grid ds-grid-2">
+      <div class="ds-card">
+        <div class="ds-label">Variantes</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0;align-items:center;">
+          <button class="btn-primary">Primary</button>
+          <button class="btn-outline">Outline</button>
+          <button class="btn-ghost">Ghost</button>
+          <button class="btn-danger">Danger</button>
+        </div>
+        <hr class="type-sep">
+        <div class="ds-label">Tailles</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0;align-items:center;">
+          <button class="btn-primary btn-sm">Small</button>
+          <button class="btn-primary">Default</button>
+          <button class="btn-primary btn-lg">Large</button>
+        </div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-label">Usage</div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin:1rem 0;">
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <button class="btn-primary btn-sm">+ Nouvel article</button>
+            <span style="font-size:.8rem;color:var(--muted);">Action principale</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <button class="btn-outline btn-sm">Lire l'article →</button>
+            <span style="font-size:.8rem;color:var(--muted);">Action secondaire</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <button class="btn-ghost btn-sm">Annuler</button>
+            <span style="font-size:.8rem;color:var(--muted);">Action tertiaire / annulation</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <button class="btn-danger btn-sm">Supprimer</button>
+            <span style="font-size:.8rem;color:var(--muted);">Action destructrice</span>
+          </div>
+        </div>
+        <hr class="type-sep">
+        <div class="ds-label">Spec hover</div>
+        <div style="font-size:.8rem;color:var(--text2);">Primary : opacity 0.9 + translateY(-1px)<br>Outline : devient gradient brand<br>Ghost : border + texte deviennent brand1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BADGES ══ -->
+  <section class="ds-section" id="badges">
+    <h2 class="ds-section-title">Badges & Statuts</h2>
+    <p class="ds-section-sub">Utilisés pour les statuts d'articles, les rôles utilisateurs, les catégories et les états de modération.</p>
+
+    <div class="ds-card">
+      <div style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-bottom:1.5rem;">
+        <span class="badge badge-brand">Culture</span>
+        <span class="badge badge-brand">Actualités</span>
+        <span class="badge badge-success">Publié</span>
+        <span class="badge badge-warning">Brouillon</span>
+        <span class="badge badge-warning">En attente</span>
+        <span class="badge badge-success">Approuvé</span>
+        <span class="badge badge-danger">Refusé</span>
+        <span class="badge badge-admin">Admin</span>
+        <span class="badge badge-muted">Membre</span>
+        <span class="badge badge-muted">📍 Angoulême</span>
+        <span class="badge badge-muted">⏱ 5 min</span>
+        <span class="badge badge-muted">👁 128 vues</span>
+      </div>
+      <div class="ds-grid ds-grid-4">
+        <div>
+          <div class="ds-label">Catégorie</div>
+          <div class="ds-value">gradient brand + white</div>
+        </div>
+        <div>
+          <div class="ds-label">Publié / Approuvé</div>
+          <div class="ds-value">#dcfce7 / #166534</div>
+        </div>
+        <div>
+          <div class="ds-label">Brouillon / Attente</div>
+          <div class="ds-value">#fef9c3 / #854d0e</div>
+        </div>
+        <div>
+          <div class="ds-label">Refusé / Erreur</div>
+          <div class="ds-value">#fee2e2 / #991b1b</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FORMULAIRES ══ -->
+  <section class="ds-section" id="formulaires">
+    <h2 class="ds-section-title">Formulaires</h2>
+    <p class="ds-section-sub">Inputs avec border 1.5px, border-radius 0.5rem, focus en brand1. Labels en uppercase 0.7rem.</p>
+
+    <div class="ds-grid ds-grid-2">
+      <div class="ds-card">
+        <div class="ds-input-group">
+          <label class="ds-input-label">Titre de l'article <span style="color:var(--brand1)">*</span></label>
+          <input class="ds-input" type="text" placeholder="Saisissez le titre…">
+        </div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">Catégorie</label>
+          <select class="ds-input">
+            <option>— Choisir une catégorie —</option>
+            <option>Actualités</option>
+            <option>Culture</option>
+          </select>
+        </div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">Description</label>
+          <textarea class="ds-input" rows="3" placeholder="Texte…" style="resize:none;"></textarea>
+        </div>
+        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:.5rem;">
+          <button class="btn-ghost btn-sm">Annuler</button>
+          <button class="btn-primary btn-sm">Enregistrer</button>
+        </div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-label" style="margin-bottom:1rem;">États des inputs</div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">État normal</label>
+          <input class="ds-input" type="text" placeholder="Border #c8d8e8">
+        </div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">État focus</label>
+          <input class="ds-input" type="text" value="Border devient #1d8fd8" style="border-color:var(--brand1);">
+        </div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">Flash succès</label>
+          <div class="flash flash-success">✓ Article enregistré avec succès.</div>
+        </div>
+        <div class="ds-input-group">
+          <label class="ds-input-label">Flash erreur</label>
+          <div class="flash flash-error">✗ Le titre est obligatoire.</div>
+        </div>
+        <div>
+          <label class="ds-input-label">Flash info</label>
+          <div class="flash flash-info">ℹ Commentaire en attente de modération.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COMPOSANTS ══ -->
+  <section class="ds-section" id="composants">
+    <h2 class="ds-section-title">Composants</h2>
+    <p class="ds-section-sub">Composants réutilisables du blog.</p>
+
+    <div class="ds-grid ds-grid-2" style="margin-bottom:2rem;">
+
+      <!-- Card article -->
+      <div>
+        <div class="ds-label" style="margin-bottom:.75rem;">Card article (post-card)</div>
+        <div class="post-card-demo">
+          <div class="post-card-img">🏙</div>
+          <div class="post-card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
+              <span class="post-card-cat">Culture</span>
+              <span style="font-size:.75rem;color:var(--muted);">12 mar. 2026</span>
+            </div>
+            <div class="post-card-title">Festival Garorock : Angoulême accueille 20 000 festivaliers</div>
+            <div class="post-card-excerpt">La ville d'Angoulême se prépare à accueillir la nouvelle édition du festival Garorock avec un programme exceptionnel cette année.</div>
+            <button class="btn-primary btn-sm" style="margin-bottom:.75rem;">Lire l'article →</button>
+            <div class="post-card-footer">
+              <span>⏱ 5 min</span>
+              <span>💬 3 commentaires</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation + toggle -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div>
+          <div class="ds-label" style="margin-bottom:.75rem;">Navigation principale (nav-link)</div>
+          <div class="nav-demo">
+            <a class="nav-link-demo">Accueil</a>
+            <a class="nav-link-demo inactive" style="color:var(--text2);">Blog</a>
+            <a class="nav-link-demo inactive" style="color:var(--text2);">Catégories</a>
+            <a class="nav-link-demo inactive" style="color:var(--text2);">Agenda</a>
+          </div>
+          <div style="margin-top:.5rem;font-size:.75rem;color:var(--muted);">Soulignement gradient au hover et sur l'élément actif</div>
+        </div>
+
+        <div>
+          <div class="ds-label" style="margin-bottom:.75rem;">Toggle dark/light mode</div>
+          <div style="display:flex;align-items:center;gap:2rem;">
+            <div>
+              <div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">Mode clair</div>
+              <button class="toggle-demo">
+                <div class="toggle-track-light"></div>
+                <div class="toggle-thumb-light">☀️</div>
+              </button>
+            </div>
+            <div>
+              <div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem;">Mode sombre</div>
+              <button class="toggle-demo">
+                <div class="toggle-track-dark"></div>
+                <div class="toggle-thumb-dark">🌙</div>
+              </button>
+            </div>
+          </div>
+          <div style="margin-top:.75rem;font-size:.75rem;color:var(--muted);">80×36px · border-radius 9999px · Transition cubic-bezier(.34,1.56,.64,1)</div>
+        </div>
+
+        <div>
+          <div class="ds-label" style="margin-bottom:.75rem;">Surface (carte / panel)</div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:.75rem;padding:1rem;">
+            <div style="font-size:.875rem;color:var(--text2);">background: var(--surface) · border: 1px solid var(--border) · border-radius: .75rem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="ds-label" style="margin-bottom:.75rem;">Pagination</div>
+    <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:2rem;">
+      <a style="padding:.4rem .85rem;border-radius:.375rem;border:1px solid var(--border);color:var(--text2);font-size:.875rem;cursor:pointer;">← Précédent</a>
+      <a style="padding:.4rem .85rem;border-radius:.375rem;border:1px solid var(--border);color:var(--text2);font-size:.875rem;cursor:pointer;">1</a>
+      <a style="padding:.4rem .85rem;border-radius:.375rem;background:linear-gradient(135deg,#1d8fd8,#22d3ee);color:white;border-color:transparent;font-size:.875rem;cursor:pointer;">2</a>
+      <a style="padding:.4rem .85rem;border-radius:.375rem;border:1px solid var(--border);color:var(--text2);font-size:.875rem;cursor:pointer;">3</a>
+      <span style="color:var(--muted);">…</span>
+      <a style="padding:.4rem .85rem;border-radius:.375rem;border:1px solid var(--border);color:var(--text2);font-size:.875rem;cursor:pointer;">8</a>
+      <a style="padding:.4rem .85rem;border-radius:.375rem;border:1px solid var(--border);color:var(--text2);font-size:.875rem;cursor:pointer;">Suivant →</a>
+    </div>
+  </section>
+
+  <!-- ══ ESPACEMENTS ══ -->
+  <section class="ds-section" id="espacements">
+    <h2 class="ds-section-title">Espacements</h2>
+    <p class="ds-section-sub">Échelle d'espacements basée sur rem. Utilisée pour les padding, margin et gap.</p>
+
+    <div class="ds-card">
+      <div class="spacing-row">
+        <?php
+        $spaces = [
+          ['size'=>'4px','rem'=>'.25rem','label'=>'xs'],
+          ['size'=>'8px','rem'=>'.5rem','label'=>'sm'],
+          ['size'=>'12px','rem'=>'.75rem','label'=>'md'],
+          ['size'=>'16px','rem'=>'1rem','label'=>'lg'],
+          ['size'=>'24px','rem'=>'1.5rem','label'=>'xl'],
+          ['size'=>'32px','rem'=>'2rem','label'=>'2xl'],
+          ['size'=>'48px','rem'=>'3rem','label'=>'3xl'],
+          ['size'=>'64px','rem'=>'4rem','label'=>'4xl'],
+        ];
+        ?>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;padding:1rem 0;">
+        <div style="text-align:center;">
+          <div style="width:4px;height:4px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:1px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">4px<br>.25rem<br>xs</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:8px;height:8px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:1px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">8px<br>.5rem<br>sm</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:12px;height:12px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:2px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">12px<br>.75rem<br>—</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:16px;height:16px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:2px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">16px<br>1rem<br>lg</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:24px;height:24px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:3px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">24px<br>1.5rem<br>xl</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:32px;height:32px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:3px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">32px<br>2rem<br>2xl</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:48px;height:48px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:4px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">48px<br>3rem<br>3xl</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:64px;height:64px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:6px;margin:0 auto;"></div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.25rem;">64px<br>4rem<br>4xl</div>
+        </div>
+      </div>
+
+      <hr class="type-sep">
+      <div class="ds-label" style="margin-bottom:.75rem;">Border-radius utilisés</div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+        <div style="text-align:center;">
+          <div style="width:60px;height:40px;background:var(--bg2);border:1px solid var(--border);border-radius:.25rem;"></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">.25rem<br>Tabs</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:60px;height:40px;background:var(--bg2);border:1px solid var(--border);border-radius:.5rem;"></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">.5rem<br>Inputs</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:60px;height:40px;background:var(--bg2);border:1px solid var(--border);border-radius:.75rem;"></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">.75rem<br>Cards</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:60px;height:40px;background:var(--bg2);border:1px solid var(--border);border-radius:1rem;"></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">1rem<br>Modales</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:80px;height:40px;background:linear-gradient(135deg,#1d8fd8,#22d3ee);border-radius:9999px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:white;font-size:.75rem;font-weight:700;">Pill</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">9999px<br>Boutons, badges</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DARK MODE ══ -->
+  <section class="ds-section" id="dark">
+    <h2 class="ds-section-title">Dark Mode</h2>
+    <p class="ds-section-sub">Variables CSS remplacées via la classe .dark sur html. Persistance via localStorage.</p>
+
+    <div class="dark-preview">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Background</div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:.25rem;background:#0f1923;border:1px solid #243550;"></div>
+            <div style="font-size:.75rem;color:#9ab0c8;font-family:monospace;">#0f1923 — --bg</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Background 2</div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:.25rem;background:#162030;border:1px solid #243550;"></div>
+            <div style="font-size:.75rem;color:#9ab0c8;font-family:monospace;">#162030 — --bg2</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Surface</div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:.25rem;background:#1a2840;border:1px solid #243550;"></div>
+            <div style="font-size:.75rem;color:#9ab0c8;font-family:monospace;">#1a2840 — --surface</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Border</div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <div style="width:32px;height:32px;border-radius:.25rem;background:#243550;border:1px solid #243550;"></div>
+            <div style="font-size:.75rem;color:#9ab0c8;font-family:monospace;">#243550 — --border</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Text</div>
+          <div style="font-size:.875rem;color:#e8f0f8;font-family:monospace;">#e8f0f8 — --text</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Text 2</div>
+          <div style="font-size:.875rem;color:#9ab0c8;font-family:monospace;">#9ab0c8 — --text2</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;color:#5a7a95;margin-bottom:.5rem;">Muted</div>
+          <div style="font-size:.875rem;color:#5a7a95;font-family:monospace;">#5a7a95 — --muted</div>
+        </div>
+      </div>
+
+      <!-- Card demo en dark -->
+      <div style="background:#1a2840;border:1px solid #243550;border-radius:.75rem;padding:1.25rem;max-width:300px;">
+        <span style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);color:white;padding:.2rem .6rem;border-radius:9999px;font-size:.7rem;font-weight:700;">Culture</span>
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#e8f0f8;margin:.5rem 0 .3rem;">Titre d'article en dark mode</div>
+        <div style="font-size:.8rem;color:#9ab0c8;">Aperçu du rendu des cards en mode sombre.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BREAKPOINTS ══ -->
+  <section class="ds-section" id="breakpoints">
+    <h2 class="ds-section-title">Breakpoints & Responsive</h2>
+    <p class="ds-section-sub">Basés sur Tailwind CSS. Approche mobile-first — les styles s'appliquent à partir de la taille indiquée.</p>
+
+    <div class="ds-card">
+      <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem;">
+        <div>
+          <div class="bp-bar" style="width:100%;background:linear-gradient(135deg,#1d8fd8,#22d3ee);">
+            xl — 1280px+
+          </div>
+        </div>
+        <div>
+          <div class="bp-bar" style="width:80%;background:linear-gradient(135deg,#1d8fd8,rgba(34,211,238,.7));">
+            lg — 1024px+
+          </div>
+        </div>
+        <div>
+          <div class="bp-bar" style="width:60%;background:linear-gradient(135deg,rgba(29,143,216,.8),rgba(34,211,238,.5));">
+            md — 768px+
+          </div>
+        </div>
+        <div>
+          <div class="bp-bar" style="width:40%;background:linear-gradient(135deg,rgba(29,143,216,.6),rgba(34,211,238,.3));">
+            sm — 640px+
+          </div>
+        </div>
+        <div>
+          <div class="bp-bar" style="width:25%;background:rgba(29,143,216,.3);color:var(--text2);">
+            xs — 0px+
+          </div>
+        </div>
+      </div>
+
+      <hr class="type-sep">
+      <div class="ds-label" style="margin-bottom:1rem;">Comportements responsive par composant</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;font-size:.8rem;">
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Navigation principale</div>
+          <div style="color:var(--text2);">Mobile : scroll horizontal silencieux<br>Desktop : liens en ligne visibles</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Topbar utilisateur</div>
+          <div style="color:var(--text2);">Mobile : flex-wrap 2 lignes<br>Desktop : une seule ligne</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Grilles d'articles</div>
+          <div style="color:var(--text2);">Mobile : 1 colonne<br>Tablette : 2 colonnes<br>Desktop : 3 colonnes</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Tableaux admin</div>
+          <div style="color:var(--text2);">Mobile : vue cartes empilées<br>md+ : tableau horizontal complet</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Footer</div>
+          <div style="color:var(--text2);">Mobile : 1 colonne empilée<br>Desktop : grille 4 colonnes</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:.5rem;padding:1rem;">
+          <div style="font-weight:700;color:var(--text);margin-bottom:.5rem;">Bannière cookies</div>
+          <div style="color:var(--text2);">Largeur : calc(100vw - 2rem)<br>max-width : 520px centré</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

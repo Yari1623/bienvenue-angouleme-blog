@@ -12,19 +12,19 @@ Interface d'administration : **phpMyAdmin 5.2.1**.
 
 La base `bienvenue_blog` contient **10 tables** :
 
-| Table | Colonnes | Rôle |
-|---|---|---|
-| `users` | 10 | Comptes membres et administrateurs |
-| `categories` | 4 | Thèmes des articles |
-| `places` | 5 | Zones géographiques |
-| `posts` | 13 | Articles du blog |
-| `post_sections` | 6 | Blocs de contenu (texte, image, vidéo…) |
-| `post_categories` | 2 | Liaison many-to-many articles ↔ catégories |
-| `comments` | 6 | Commentaires des membres |
-| `likes` | 4 | J'aimes sur les articles |
-| `post_views` | 5 | Historique de consultation |
-| `events` | 7 | Événements de l'agenda |
-| `event_interests` | 4 | Membres intéressés par un événement |
+|       Table       | Colonnes |                    Rôle                    |
+|-------------------|----------|--------------------------------------------|
+| `users`           | 10       | Comptes membres et administrateurs         |
+| `categories`      | 4        | Thèmes des articles                        |
+| `places`          | 5        | Zones géographiques                        |
+| `posts`           | 13       | Articles du blog                           |
+| `post_sections`   | 6        | Blocs de contenu (texte, image, vidéo…)    |
+| `post_categories` | 2        | Liaison many-to-many articles ↔ catégories |
+| `comments`        | 6        | Commentaires des membres                   |
+| `likes`           | 4        | J'aimes sur les articles                   |
+| `post_views`      | 5        | Historique de consultation                 |
+| `events`          | 7        | Événements de l'agenda                     |
+| `event_interests` | 4        | Membres intéressés par un événement        |
 
 ---
 
@@ -107,14 +107,14 @@ les statistiques. L'IP permet une déduplication minimale conforme aux principes
 
 Les colonnes fréquemment interrogées sont indexées pour les performances :
 
-| Table | Index | Usage |
-|---|---|---|
-| `posts` | `idx_posts_slug` | Affichage article par slug |
-| `posts` | `idx_posts_status` | Filtrage publié/brouillon |
-| `posts` | `idx_posts_created` | Tri chronologique |
-| `categories` | `idx_categories_slug` | Navigation par catégorie |
-| `events` | `idx_events_date` | Tri des événements par date |
-| `users` | `idx_users_email`, `idx_users_role` | Authentification, stats |
+|     Table    |                Index                |            Usage            |
+|--------------|-------------------------------------|-----------------------------|
+| `posts`      | `idx_posts_slug`                    | Affichage article par slug  |
+| `posts`      | `idx_posts_status`                  | Filtrage publié/brouillon   |
+| `posts`      | `idx_posts_created`                 | Tri chronologique           |
+| `categories` | `idx_categories_slug`               | Navigation par catégorie    |
+| `events`     | `idx_events_date`                   | Tri des événements par date |
+| `users`      | `idx_users_email`, `idx_users_role` | Authentification, stats     |
 
 ---
 

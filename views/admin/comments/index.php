@@ -9,9 +9,9 @@ $totalPages    = max(1, (int)ceil($totalItems / $perPage));
 $currentPage   = min($currentPage, $totalPages);
 $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $perPage);
 ?>
- 
+
 <div class="space-y-6">
- 
+
     <div class="flex flex-wrap items-start justify-between gap-3 pb-4"
          style="border-bottom:2px solid var(--border)">
         <div>
@@ -25,7 +25,7 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
         <a href="<?= BASE_URL ?>/admin" class="text-sm"
            style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
     </div>
- 
+
     <!-- Filtres -->
     <div class="flex gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;font-size:.875rem;">
         <a href="<?= BASE_URL ?>/admin/comments"
@@ -42,20 +42,20 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
             <?php endif; ?>
         </a>
     </div>
- 
+
     <?php if (empty($comments)): ?>
     <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
         <p class="text-4xl mb-3">💬</p>
         <p>Aucun commentaire<?= $currentFilter === 'pending' ? ' en attente' : '' ?>.</p>
     </div>
     <?php else: ?>
- 
+
     <!-- ═══ VUE MOBILE : cartes ═══ -->
     <div class="md:hidden space-y-3">
         <?php foreach ($pageItems as $comment): ?>
         <div class="surface rounded-xl p-4 space-y-3"
              style="<?= $comment['status'] === 'pending' ? 'border-left:3px solid #f97316;' : '' ?>">
- 
+
             <!-- Auteur + date + statut -->
             <div class="flex items-center justify-between gap-2 flex-wrap">
                 <div>
@@ -79,26 +79,28 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
                     }; ?>
                 </span>
             </div>
- 
+
             <!-- Extrait -->
             <p style="font-size:.875rem;color:var(--text2);font-family:'Source Sans 3',sans-serif;
                       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
                 <?= htmlspecialchars($comment['content']) ?>
             </p>
- 
+
             <!-- Boutons -->
             <div class="flex flex-wrap gap-2">
                 <button onclick="openCommentModal(<?= $comment['id'] ?>)"
+                        aria-label="Voir le commentaire de <?= htmlspecialchars($comment['username'] ?? 'cet utilisateur') ?>"
                         style="flex:1;min-width:60px;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
                                border:1.5px solid #1d8fd8;color:#1d8fd8;background:transparent;cursor:pointer;"
                         onmouseover="this.style.background='#1d8fd8';this.style.color='white'"
                         onmouseout="this.style.background='transparent';this.style.color='#1d8fd8'">
-                    👁 Voir
+                    <span aria-hidden="true">👁</span> Voir
                 </button>
                 <?php if ($comment['status'] !== 'approved'): ?>
                 <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/approve" style="flex:1;min-width:80px;">
                     <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                    <button style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
+                    <button aria-label="Approuver le commentaire de <?= htmlspecialchars($comment['username'] ?? 'cet utilisateur') ?>"
+                        style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
                                    border:1.5px solid #16a34a;color:#16a34a;background:transparent;cursor:pointer;"
                         onmouseover="this.style.background='#16a34a';this.style.color='white'"
                         onmouseout="this.style.background='transparent';this.style.color='#16a34a'">✓ Approuver</button>
@@ -107,7 +109,8 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
                 <?php if ($comment['status'] !== 'rejected'): ?>
                 <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/reject" style="flex:1;min-width:70px;">
                     <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                    <button style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
+                    <button aria-label="Refuser le commentaire de <?= htmlspecialchars($comment['username'] ?? 'cet utilisateur') ?>"
+                        style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
                                    border:1.5px solid #d97706;color:#d97706;background:transparent;cursor:pointer;"
                         onmouseover="this.style.background='#d97706';this.style.color='white'"
                         onmouseout="this.style.background='transparent';this.style.color='#d97706'">✗ Refuser</button>
@@ -116,16 +119,17 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
                 <form method="POST" action="<?= BASE_URL ?>/admin/comments/<?= $comment['id'] ?>/delete"
                       style="flex:1;min-width:60px;" onsubmit="return confirm('Supprimer ?')">
                     <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
-                    <button style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
+                    <button aria-label="Supprimer le commentaire de <?= htmlspecialchars($comment['username'] ?? 'cet utilisateur') ?>"
+                        style="width:100%;padding:.35rem;font-size:.8rem;font-weight:700;border-radius:.5rem;
                                    border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;"
                         onmouseover="this.style.background='#dc2626';this.style.color='white'"
-                        onmouseout="this.style.background='transparent';this.style.color='#dc2626'">🗑 Suppr.</button>
+                        onmouseout="this.style.background='transparent';this.style.color='#dc2626'"><span aria-hidden="true">🗑</span> Suppr.</button>
                 </form>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
- 
+
     <!-- ═══ VUE DESKTOP : tableau ═══ -->
     <div class="hidden md:block" style="overflow-x:auto;border-radius:.75rem;border:1px solid var(--border);">
         <table style="width:100%;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
@@ -189,7 +193,7 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
             </tbody>
         </table>
     </div>
- 
+
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
     <div class="flex justify-center items-center gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;">
@@ -209,10 +213,10 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
         <?php endif; ?>
     </div>
     <?php endif; ?>
- 
+
     <?php endif; ?>
 </div>
- 
+
 <script>
 const COMMENTS_DATA = {
     <?php foreach ($comments as $c): ?>
@@ -224,7 +228,7 @@ const COMMENTS_DATA = {
     },
     <?php endforeach; ?>
 </script>
- 
+
 <div id="comment-modal" class="fixed inset-0 z-50 items-center justify-center p-4"
      style="display:none;background:rgba(0,0,0,.6);">
     <div class="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
@@ -249,7 +253,7 @@ const COMMENTS_DATA = {
         <div id="modal-actions" class="flex items-center justify-end gap-3 px-6 py-4 flex-wrap" style="border-top:1px solid var(--border);"></div>
     </div>
 </div>
- 
+
 <script>
 function openCommentModal(id) {
     const c = COMMENTS_DATA[id]; if (!c) return;

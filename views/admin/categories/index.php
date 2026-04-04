@@ -10,13 +10,13 @@ $pageTitle = 'Gestion des catégories — Admin';
             <a href="<?= BASE_URL ?>/admin" class="text-sm" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
         </div>
     </div>
- 
+
     <?php if (empty($categories)): ?>
     <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
         <p class="text-4xl mb-3">🏷</p><p>Aucune catégorie.</p>
     </div>
     <?php else: ?>
- 
+
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:.75rem;border:1px solid var(--border);">
         <table style="width:100%;min-width:320px;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
             <thead>
@@ -48,11 +48,12 @@ $pageTitle = 'Gestion des catégories — Admin';
                             <form method="POST" action="<?= BASE_URL ?>/admin/categories/<?= $cat['id'] ?>/delete" style="display:inline;" onsubmit="return confirm('Supprimer ?')">
                                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
                                 <!-- Icône seule sur mobile, texte sur desktop -->
-                                <button style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;white-space:nowrap;"
+                                <button aria-label="Supprimer la catégorie <?= htmlspecialchars($cat['name']) ?>"
+                                    style="padding:.25rem .6rem;font-size:.7rem;font-weight:700;border-radius:9999px;border:1.5px solid #dc2626;color:#dc2626;background:transparent;cursor:pointer;white-space:nowrap;"
                                     onmouseover="this.style.background='#dc2626';this.style.color='white'"
                                     onmouseout="this.style.background='transparent';this.style.color='#dc2626'">
                                     <span class="hidden md:inline">Supprimer</span>
-                                    <span class="md:hidden">🗑</span>
+                                    <span class="md:hidden" aria-hidden="true">🗑</span>
                                 </button>
                             </form>
                         </div>

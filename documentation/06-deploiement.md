@@ -2,24 +2,24 @@
 
 ## Environnements
 
-| Environnement | Serveur | URL |
-|---|---|---|
-| Développement | WAMP local (Windows 11) | http://localhost/bienvenue-angouleme-blog/public |
-| Production | Hébergement mutualisé Apache | https://bienvenue-angouleme.fr (à configurer) |
+| Environnement |            Serveur           |                        URL                       |
+|---------------|------------------------------|--------------------------------------------------|
+| Développement | WAMP local (Windows 11)      | http://localhost/bienvenue-angouleme-blog/public |
+| Production    | Hébergement mutualisé Apache | https://bienvenue-angouleme.fr (à configurer)    |
 
 ---
 
 ## Prérequis serveur
 
-| Composant | Version minimale | Version utilisée |
-|---|---|---|
-| PHP | 8.1+ | 8.3.14 |
-| MySQL / MariaDB | 5.7+ / 10.3+ | 9.1.0 |
-| Apache | 2.4+ | 2.4.x |
-| Extension PHP PDO | — | Requise |
-| Extension PHP PDO_MySQL | — | Requise |
-| Extension PHP mbstring | — | Requise |
-| Module Apache mod_rewrite | — | Requis |
+|         Composant         | Version minimale | Version utilisée |
+|---------------------------|------------------|------------------|
+| PHP                       | 8.1+             | 8.3.14           |
+| MySQL / MariaDB           | 5.7+ / 10.3+     | 9.1.0            |
+| Apache                    | 2.4+             | 2.4.x            |
+| Extension PHP PDO         | —                | Requise          |
+| Extension PHP PDO_MySQL   | —                | Requise          |
+| Extension PHP mbstring    | —                | Requise          |
+| Module Apache mod_rewrite | —                | Requis           |
 
 ---
 

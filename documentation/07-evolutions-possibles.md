@@ -141,14 +141,14 @@ qui changent rarement (page d'accueil, liste des catégories).
 
 ## Récapitulatif des priorités
 
-| Évolution | Impact UX | Complexité | Priorité |
-|---|---|---|---|
-| API REST | Élevé | Moyenne | Haute |
-| Newsletter | Élevé | Faible | Haute |
-| Recherche avancée | Moyen | Élevée | Moyenne |
-| Pagination AJAX | Moyen | Faible | Moyenne |
-| Mise en cache | Faible (invisible) | Moyenne | Moyenne |
-| Éditeur WYSIWYG | Élevé (admin) | Moyenne | Moyenne |
-| PWA | Moyen | Élevée | Basse |
-| Statistiques avancées | Moyen (admin) | Moyenne | Basse |
+|       Évolution       |      Impact UX     | Complexité | Priorité |
+|-----------------------|--------------------|------------|----------|
+| API REST              | Élevé              | Moyenne    | Haute    |
+| Newsletter            | Élevé              | Faible     | Haute    |
+| Recherche avancée     | Moyen              | Élevée     | Moyenne  |
+| Pagination AJAX       | Moyen              | Faible     | Moyenne  |
+| Mise en cache         | Faible (invisible) | Moyenne    | Moyenne  |
+| Éditeur WYSIWYG       | Élevé (admin)      | Moyenne    | Moyenne  |
+| PWA                   | Moyen              | Élevée     | Basse    |
+| Statistiques avancées | Moyen (admin)      | Moyenne    | Basse    |
 

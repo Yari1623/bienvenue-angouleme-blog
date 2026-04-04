@@ -105,10 +105,10 @@ Utilisée dans le dashboard admin pour 4 types de graphiques :
 
 Toutes les dépendances sont chargées via CDN — aucune installation locale requise.
 
-| Dépendance | Version | Source | Usage |
-|---|---|---|---|
-| Tailwind CSS | Play CDN | cdn.tailwindcss.com | Framework CSS utilitaire |
-| Playfair Display | — | Google Fonts | Police titres |
-| Source Sans 3 | — | Google Fonts | Police corps de texte |
-| Chart.js | latest | cdn.jsdelivr.net | Graphiques dashboard |
+|    Dépendance    |  Version  |        Source        |           Usage           |
+|------------------|-----------|----------------------|---------------------------|
+| Tailwind CSS     | Play CDN  | cdn.tailwindcss.com  | Framework CSS utilitaire  |
+| Playfair Display | —         | Google Fonts         | Police titres             |
+| Source Sans 3    | —         | Google Fonts         | Police corps de texte     |
+| Chart.js         | latest    | cdn.jsdelivr.net     | Graphiques dashboard      |
 

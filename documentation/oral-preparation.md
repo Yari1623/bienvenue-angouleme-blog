@@ -4,10 +4,10 @@
 
 L'examen DWWM se déroule en deux parties :
 
-| Partie | Durée | Contenu |
-|---|---|---|
-| Présentation du projet | 35 min | Exposé de la démarche et du projet |
-| Entretien technique | 40 min | Questions du jury sur le projet et les compétences |
+|         Partie         |  Durée |                       Contenu                      |
+|------------------------|--------|----------------------------------------------------|
+| Présentation du projet | 35 min | Exposé de la démarche et du projet                 |
+| Entretien technique    | 40 min | Questions du jury sur le projet et les compétences |
 
 ---
 
@@ -202,26 +202,26 @@ Parcours utilisateur :
 
 Assurez-vous de pouvoir expliquer chacun de ces termes sans hésitation :
 
-| Terme | Définition courte |
-|---|---|
-| MVC | Pattern architectural séparant Modèle, Vue et Contrôleur |
-| Front Controller | Point d'entrée unique de l'application (index.php) |
-| PDO | PHP Data Objects — couche d'abstraction pour accéder aux BDD |
-| Requête préparée | Requête SQL avec paramètres liés, protège des injections |
-| CSRF | Cross-Site Request Forgery — attaque par formulaire falsifié |
-| XSS | Cross-Site Scripting — injection de JavaScript malveillant |
-| bcrypt | Algorithme de hashage lent, adapté aux mots de passe |
-| Session | Mécanisme de persistance côté serveur entre les requêtes HTTP |
-| Cookie | Donnée persistée côté navigateur |
-| Clé étrangère | Colonne référençant la PK d'une autre table |
-| Cardinalité | Nature d'une relation : 1:1, 1:N, N:M |
-| ON DELETE CASCADE | Suppression automatique des enfants avec le parent |
-| Index BDD | Structure accélérant les recherches sur une colonne |
-| Autoloader | Chargement automatique des classes PHP |
-| RGPD | Règlement Général sur la Protection des Données |
-| REST | Style d'architecture d'API basé sur les méthodes HTTP |
-| Responsive | Adaptation de l'interface à toutes les tailles d'écran |
-| localStorage | Stockage clé-valeur côté navigateur, persistant |
+|       Terme       |                       Définition courte                       |
+|-------------------|---------------------------------------------------------------|
+| MVC               | Pattern architectural séparant Modèle, Vue et Contrôleur      |
+| Front Controller  | Point d'entrée unique de l'application (index.php)            |
+| PDO               | PHP Data Objects — couche d'abstraction pour accéder aux BDD  |
+| Requête préparée  | Requête SQL avec paramètres liés, protège des injections      |
+| CSRF              | Cross-Site Request Forgery — attaque par formulaire falsifié  |
+| XSS               | Cross-Site Scripting — injection de JavaScript malveillant    |
+| bcrypt            | Algorithme de hashage lent, adapté aux mots de passe          |
+| Session           | Mécanisme de persistance côté serveur entre les requêtes HTTP |
+| Cookie            | Donnée persistée côté navigateur                              |
+| Clé étrangère     | Colonne référençant la PK d'une autre table                   |
+| Cardinalité       | Nature d'une relation : 1:1, 1:N, N:M                         |
+| ON DELETE CASCADE | Suppression automatique des enfants avec le parent            |
+| Index BDD         | Structure accélérant les recherches sur une colonne           |
+| Autoloader        | Chargement automatique des classes PHP                        |
+| RGPD              | Règlement Général sur la Protection des Données               |
+| REST              | Style d'architecture d'API basé sur les méthodes HTTP         |
+| Responsive        | Adaptation de l'interface à toutes les tailles d'écran        |
+| localStorage      | Stockage clé-valeur côté navigateur, persistant               |
 
 ---
 

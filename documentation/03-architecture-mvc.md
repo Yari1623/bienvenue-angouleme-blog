@@ -113,14 +113,14 @@ Chargement du fichier `.env` :
 Les modèles héritent de `Model` et encapsulent toutes les interactions avec la base de données.
 **Aucune requête SQL n'apparaît dans les contrôleurs ou les vues.**
 
-| Modèle | Responsabilités principales |
-|---|---|
-| `User.php` | CRUD, authentification, vérification unicité email/username, stats |
-| `Post.php` | CRUD articles, sections, likes, vues, recherche full-text, pagination |
-| `Category.php` | CRUD catégories avec comptage d'articles (`post_count`) |
-| `Place.php` | CRUD lieux |
-| `Comment.php` | CRUD commentaires, modération, commentaires approuvés par article |
-| `Event.php` | CRUD événements, gestion des intérêts utilisateurs |
+|     Modèle     |                      Responsabilités principales                      |
+|----------------|-----------------------------------------------------------------------|
+| `User.php`     | CRUD, authentification, vérification unicité email/username, stats    |
+| `Post.php`     | CRUD articles, sections, likes, vues, recherche full-text, pagination |
+| `Category.php` | CRUD catégories avec comptage d'articles (`post_count`)               |
+| `Place.php`    | CRUD lieux                                                            |
+| `Comment.php`  | CRUD commentaires, modération, commentaires approuvés par article     |
+| `Event.php`    | CRUD événements, gestion des intérêts utilisateurs                    |
 
 ---
 
@@ -128,26 +128,26 @@ Les modèles héritent de `Model` et encapsulent toutes les interactions avec la
 
 18 contrôleurs couvrent l'ensemble des fonctionnalités :
 
-| Contrôleur | Rôle |
-|---|---|
-| `HomeController` | Page d'accueil |
-| `BlogController` | Liste des articles avec filtres et pagination |
-| `PostController` | Affichage article, commentaire, like + CRUD admin |
-| `CategoryController` | Page par catégorie publique |
-| `CategoriesController` | Page liste des catégories et lieux |
-| `EventController` | Agenda public + CRUD admin + toggle intérêt |
-| `AdminController` | Dashboard avec statistiques et graphiques |
-| `CommentController` | Modération admin des commentaires |
-| `UserController` | Gestion admin des utilisateurs |
-| `ProfileController` | Page profil membre |
-| `AccountController` | Modification compte membre |
-| `LoginController` | Connexion / déconnexion |
-| `RegisterController` | Inscription |
-| `ContactController` | Formulaire de contact |
-| `AboutController` | Page À propos |
-| `HistoireController` | Page Histoire d'Angoulême |
-| `LegalController` | Pages légales (mentions, RGPD, cookies, confidentialité) |
-| `ErrorController` | Page 404 |
+|       Contrôleur       |                           Rôle                           |
+|------------------------|----------------------------------------------------------|
+| `HomeController`       | Page d'accueil                                           |
+| `BlogController`       | Liste des articles avec filtres et pagination            |
+| `PostController`       | Affichage article, commentaire, like + CRUD admin        |
+| `CategoryController`   | Page par catégorie publique                              |
+| `CategoriesController` | Page liste des catégories et lieux                       |
+| `EventController`      | Agenda public + CRUD admin + toggle intérêt              |
+| `AdminController`      | Dashboard avec statistiques et graphiques                |
+| `CommentController`    | Modération admin des commentaires                        |
+| `UserController`       | Gestion admin des utilisateurs                           |
+| `ProfileController`    | Page profil membre                                       |
+| `AccountController`    | Modification compte membre                               |
+| `LoginController`      | Connexion / déconnexion                                  |
+| `RegisterController`   | Inscription                                              |
+| `ContactController`    | Formulaire de contact                                    |
+| `AboutController`      | Page À propos                                            |
+| `HistoireController`   | Page Histoire d'Angoulême                                |
+| `LegalController`      | Pages légales (mentions, RGPD, cookies, confidentialité) |
+| `ErrorController`      | Page 404                                                 |
 
 ---
 

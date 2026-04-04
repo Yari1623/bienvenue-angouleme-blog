@@ -1,7 +1,7 @@
 <?php
 // views/admin/users/index.php
 $pageTitle = 'Gestion des utilisateurs — Admin';
- 
+
 $perPage     = 10;
 $currentPage = max(1, (int)($_GET['page'] ?? 1));
 $totalItems  = count($users ?? []);
@@ -9,9 +9,9 @@ $totalPages  = max(1, (int)ceil($totalItems / $perPage));
 $currentPage = min($currentPage, $totalPages);
 $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage);
 ?>
- 
+
 <div class="space-y-6">
- 
+
     <div class="flex flex-wrap items-center justify-between gap-3 pb-4"
          style="border-bottom:2px solid var(--border)">
         <div>
@@ -23,19 +23,19 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
         <a href="<?= BASE_URL ?>/admin" class="text-sm"
            style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
     </div>
- 
+
     <?php if (empty($users)): ?>
     <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
         <p class="text-4xl mb-3">👤</p>
         <p>Aucun utilisateur.</p>
     </div>
     <?php else: ?>
- 
+
     <!-- ═══ VUE MOBILE : cartes ═══ -->
     <div class="md:hidden space-y-3">
         <?php foreach ($pageItems as $u): ?>
         <div class="surface rounded-xl p-4 space-y-3">
- 
+
             <!-- Ligne 1 : avatar + nom + email -->
             <div class="flex items-center gap-3">
                 <div style="width:2.5rem;height:2.5rem;border-radius:50%;flex-shrink:0;
@@ -55,7 +55,7 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                     </div>
                 </div>
             </div>
- 
+
             <!-- Ligne 2 : select rôle -->
             <form method="POST" action="<?= BASE_URL ?>/admin/users/<?= $u['id'] ?>/role">
                 <input type="hidden" name="_csrf" value="<?= \App\Core\Csrf::generate() ?>">
@@ -68,7 +68,7 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                                    border:1.5px solid <?= $u['role'] === 'admin' ? '#1d8fd8' : 'var(--border)' ?>;
                                    background:<?= $u['role'] === 'admin' ? 'rgba(29,143,216,.1)' : 'var(--bg2)' ?>;
                                    color:<?= $u['role'] === 'admin' ? '#1d8fd8' : 'var(--text2)' ?>;
-                                   outline:none;">
+                                   outline:2px solid transparent;outline-offset:2px;">
                         <option value="member" <?= $u['role'] === 'member' ? 'selected' : '' ?>>Membre</option>
                         <option value="admin"  <?= $u['role'] === 'admin'  ? 'selected' : '' ?>>Admin</option>
                     </select>
@@ -81,7 +81,7 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                     <?php endif; ?>
                 </div>
             </form>
- 
+
             <!-- Ligne 3 : boutons éditer / supprimer -->
             <div class="flex gap-2">
                 <a href="<?= BASE_URL ?>/admin/users/<?= $u['id'] ?>/edit"
@@ -107,11 +107,11 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                 <div style="flex:1;"></div>
                 <?php endif; ?>
             </div>
- 
+
         </div>
         <?php endforeach; ?>
     </div>
- 
+
     <!-- ═══ VUE DESKTOP : tableau ═══ -->
     <div class="hidden md:block" style="overflow-x:auto;border-radius:.75rem;border:1px solid var(--border);">
         <table style="width:100%;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
@@ -127,7 +127,7 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
             <tbody>
                 <?php foreach ($pageItems as $i => $u): ?>
                 <tr style="background:<?= $i % 2 === 0 ? 'var(--surface)' : 'var(--bg2)' ?>;border-bottom:1px solid var(--border);">
- 
+
                     <td style="padding:.75rem 1rem;">
                         <div style="display:flex;align-items:center;gap:.6rem;">
                             <div style="width:2rem;height:2rem;border-radius:50%;flex-shrink:0;
@@ -146,11 +146,11 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                             </div>
                         </div>
                     </td>
- 
+
                     <td style="padding:.75rem 1rem;color:var(--text2);font-size:.8rem;">
                         <?= htmlspecialchars($u['email']) ?>
                     </td>
- 
+
                     <td style="padding:.75rem 1rem;text-align:center;">
                         <form method="POST" action="<?= BASE_URL ?>/admin/users/<?= $u['id'] ?>/role"
                               style="display:inline-flex;align-items:center;gap:.3rem;">
@@ -160,17 +160,17 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
                                            border:1.5px solid <?= $u['role'] === 'admin' ? '#1d8fd8' : 'var(--border)' ?>;
                                            background:<?= $u['role'] === 'admin' ? 'rgba(29,143,216,.1)' : 'var(--bg2)' ?>;
                                            color:<?= $u['role'] === 'admin' ? '#1d8fd8' : 'var(--text2)' ?>;
-                                           cursor:pointer;outline:none;">
+                                           cursor:pointer;outline:2px solid transparent;outline-offset:2px;">
                                 <option value="member" <?= $u['role'] === 'member' ? 'selected' : '' ?>>Membre</option>
                                 <option value="admin"  <?= $u['role'] === 'admin'  ? 'selected' : '' ?>>Admin</option>
                             </select>
                         </form>
                     </td>
- 
+
                     <td style="padding:.75rem 1rem;color:var(--text2);font-size:.8rem;white-space:nowrap;">
                         <?= date('d/m/Y', strtotime($u['created_at'])) ?>
                     </td>
- 
+
                     <td style="padding:.75rem 1rem;text-align:right;">
                         <div style="display:flex;gap:.3rem;justify-content:flex-end;align-items:center;">
                             <a href="<?= BASE_URL ?>/admin/users/<?= $u['id'] ?>/edit"
@@ -197,7 +197,7 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
             </tbody>
         </table>
     </div>
- 
+
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
     <div class="flex justify-center items-center gap-2 flex-wrap"
@@ -222,6 +222,6 @@ $pageItems   = array_slice($users ?? [], ($currentPage - 1) * $perPage, $perPage
         <?php endif; ?>
     </div>
     <?php endif; ?>
- 
+
     <?php endif; ?>
 </div>

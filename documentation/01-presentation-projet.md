@@ -46,16 +46,16 @@ Le projet couvre l'intégralité d'un blog professionnel :
 
 ## Chiffres clés du projet
 
-| Indicateur | Valeur |
-|---|---|
-| Tables en base de données | 10 |
-| Controllers | 18 |
-| Modèles | 6 |
-| Fichiers de vues | ~45 |
-| Routes déclarées | ~40 |
-| Articles de test | 48 |
-| Utilisateurs de test | 10 |
-| Durée de développement | ~6 semaines |
+|         Indicateur         |    Valeur    |
+|----------------------------|--------------|
+| Tables en base de données  | 10           |
+| Controllers                | 18           |
+| Modèles                    | 6            |
+| Fichiers de vues           | ~45          |
+| Routes déclarées           | ~40          |
+| Articles de test           | 48           |
+| Utilisateurs de test       | 10           |
+| Durée de développement     | ~6 semaines  |
 
 ## Public cible
 
@@ -66,16 +66,16 @@ Le projet couvre l'intégralité d'un blog professionnel :
 
 ## Stack technique résumée
 
-| Couche | Technologie |
-|---|---|
-| Backend | PHP 8.3.14 |
-| Base de données | MySQL 9.1.0 |
-| Architecture | MVC personnalisé (sans framework) |
-| Frontend | Tailwind CSS CDN + CSS variables |
-| Typographie | Google Fonts (Playfair Display + Source Sans 3) |
-| Graphiques | Chart.js |
-| Serveur local | WAMP (Apache 2.4 + PHP 8.3 + MySQL 9.1) |
-| Versionnement | Git / GitHub |
+|      Couche      |                   Technologie                   |
+|------------------|-------------------------------------------------|
+| Backend          | PHP 8.3.14                                      |
+| Base de données  | MySQL 9.1.0                                     |
+| Architecture     | MVC personnalisé (sans framework)               |
+| Frontend         | Tailwind CSS CDN + CSS variables                |
+| Typographie      | Google Fonts (Playfair Display + Source Sans 3) |
+| Graphiques       | Chart.js                                        |
+| Serveur local    | WAMP (Apache 2.4 + PHP 8.3 + MySQL 9.1)         |
+| Versionnement    | Git / GitHub                                    |
 
 ## Lien GitHub
 

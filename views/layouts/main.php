@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?? 'Bienvenue à Angoulême' ?></title>
- 
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
- 
+
     <!-- Google Fonts : Playfair Display (titres) + Source Sans 3 (texte) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
- 
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -25,7 +25,7 @@
             }}
         }
     </script>
- 
+
     <style>
         /* ═══════════════════════════════════════════
            VARIABLES CSS — Thème clair (défaut)
@@ -39,7 +39,7 @@
             --text2:   #4a6275;
             --muted:   #7a95a8;
         }
- 
+
         /* ═══════════════════════════════════════════
            VARIABLES CSS — Thème sombre
         ═══════════════════════════════════════════ */
@@ -52,7 +52,7 @@
             --text2:   #9ab0c8;
             --muted:   #5a7a95;
         }
- 
+
         /* ═══════════════════════════════════════════
            RESET / BASE
         ═══════════════════════════════════════════ */
@@ -66,7 +66,7 @@
             flex-direction: column;
         }
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
- 
+
         /* ═══════════════════════════════════════════
            GRADIENT BRAND
         ═══════════════════════════════════════════ */
@@ -77,7 +77,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
- 
+
         /* ═══════════════════════════════════════════
            BOUTONS
         ═══════════════════════════════════════════ */
@@ -90,7 +90,7 @@
             font-family: 'Source Sans 3', sans-serif;
         }
         .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
- 
+
         .btn-outline {
             background: transparent; color: #1d8fd8;
             border: 2px solid #1d8fd8; font-weight: 600;
@@ -102,7 +102,7 @@
             background: linear-gradient(135deg, #1d8fd8, #22d3ee);
             color: white; border-color: transparent;
         }
- 
+
         .btn-ghost {
             background: transparent; color: var(--text2);
             border: 2px solid var(--border); font-weight: 600;
@@ -111,12 +111,12 @@
             font-family: 'Source Sans 3', sans-serif;
         }
         .btn-ghost:hover { border-color: #1d8fd8; color: #1d8fd8; }
- 
+
         /* ═══════════════════════════════════════════
            SURFACE (cards, panels)
         ═══════════════════════════════════════════ */
         .surface { background: var(--surface); border: 1px solid var(--border); }
- 
+
         /* ═══════════════════════════════════════════
            NAVBAR
         ═══════════════════════════════════════════ */
@@ -138,12 +138,12 @@
         }
         .nav-link:hover, .nav-link.active { color: #1d8fd8; }
         .nav-link:hover::after, .nav-link.active::after { width: 100%; }
- 
+
         /* ═══════════════════════════════════════════
            BARRE SUPÉRIEURE — séparateur
         ═══════════════════════════════════════════ */
         .topbar-sep { color: var(--border); user-select: none; }
- 
+
         /* ═══════════════════════════════════════════
            TOGGLE DARK/LIGHT (3D neumorphique)
         ═══════════════════════════════════════════ */
@@ -184,7 +184,7 @@
             left: 48px;
             background: radial-gradient(circle at 35% 35%, #e8e8ff, #b0b8d8);
         }
- 
+
         /* ═══════════════════════════════════════════
            CARDS ARTICLES
         ═══════════════════════════════════════════ */
@@ -198,13 +198,13 @@
             box-shadow: 0 12px 32px rgba(29,143,216,.15);
             border-color: #1d8fd8;
         }
- 
+
         /* ═══════════════════════════════════════════
            FLASH MESSAGES
         ═══════════════════════════════════════════ */
         .flash-success { background: #f0fdf4; border-left: 4px solid #22c55e; color: #166534; }
         .flash-error   { background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; }
- 
+
         /* ═══════════════════════════════════════════
            PAGINATION
         ═══════════════════════════════════════════ */
@@ -217,7 +217,33 @@
             background: linear-gradient(135deg, #1d8fd8, #22d3ee);
             color: white; border-color: transparent;
         }
- 
+
+        /* ═══════════════════════════════════════════
+           ACCESSIBILITÉ — Focus visible (WCAG 2.1 AA)
+           outline transparent par défaut, visible au focus clavier
+        ═══════════════════════════════════════════ */
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #1d8fd8;
+            outline-offset: 2px;
+        }
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid #1d8fd8;
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+        /* Skip link accessibilité — navigation clavier */
+        .skip-link {
+            position: absolute; top: -100%; left: 0;
+            background: #1d8fd8; color: white;
+            padding: .5rem 1rem; font-weight: 700;
+            z-index: 99999; border-radius: 0 0 .5rem 0;
+            transition: top .2s;
+        }
+        .skip-link:focus { top: 0; }
+
         /* ═══════════════════════════════════════════
            BANNIÈRE COOKIES
            width:calc(100vw - 2rem) + max-width évite le débordement mobile
@@ -240,7 +266,7 @@
             width: 100%; max-width: 600px; max-height: 90vh;
             overflow-y: auto; border: 1px solid var(--border);
         }
- 
+
         /* Cookie modal — responsive boutons en colonne sur mobile */
         .cookie-row-global {
             display: flex; flex-direction: column;
@@ -281,14 +307,14 @@
             font-size: .8rem; font-weight: 700; cursor: pointer; white-space: nowrap;
         }
         .btn-deny:hover { opacity: .85; }
- 
+
         /* ═══════════════════════════════════════════
            SCROLLBAR personnalisée
         ═══════════════════════════════════════════ */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #1d8fd8; border-radius: 3px; }
- 
+
         /* ═══════════════════════════════════════════
            BARRE TOPBAR — masquage scrollbar horizontale
         ═══════════════════════════════════════════ */
@@ -297,17 +323,20 @@
     </style>
 </head>
 <body>
- 
+
+<!-- Skip link accessibilité — navigation clavier (WCAG 2.4.1) -->
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
 <?php
 use App\Core\Auth;
 use App\Core\Flash;
- 
+
 // Données utilisateur — utilisées dans header et footer
 $user       = Auth::user();
 $isAdmin    = Auth::isAdmin();
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 ?>
- 
+
 <!-- ══════════════════════════════════════════════
      BANNIÈRE COOKIES
 ══════════════════════════════════════════════ -->
@@ -329,7 +358,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         <button onclick="cookieAccept()"  class="btn-primary text-sm">OK pour moi ✓</button>
     </div>
 </div>
- 
+
 <!-- ══════════════════════════════════════════════
      MODAL GESTION COOKIES
 ══════════════════════════════════════════════ -->
@@ -340,7 +369,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             <p class="text-sm mb-4" style="color:var(--text2)">
                 En autorisant ces services, vous acceptez le dépôt de cookies nécessaires à leur bon fonctionnement.
             </p>
- 
+
             <div class="cookie-row-global mb-4 p-3 rounded-lg" style="background:var(--bg2)">
                 <span class="font-semibold text-sm" style="color:var(--text)">Préférences globales</span>
                 <div class="flex gap-2 flex-wrap">
@@ -348,7 +377,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     <button onclick="cookieDenyAll()"   class="btn-deny">✗ Tout refuser</button>
                 </div>
             </div>
- 
+
             <div class="cookie-section">
                 <div class="cookie-section-header">🔒 Cookies obligatoires</div>
                 <div class="cookie-service-row p-4">
@@ -359,7 +388,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     <button class="btn-allow" disabled style="opacity:.6;cursor:not-allowed;">✓ Autorisé</button>
                 </div>
             </div>
- 
+
             <div class="cookie-section">
                 <div class="cookie-section-header">🎬 Vidéos</div>
                 <?php
@@ -381,7 +410,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 </div>
                 <?php endforeach; ?>
             </div>
- 
+
             <div class="flex justify-end gap-3 mt-4 flex-wrap">
                 <button onclick="closeCookieModal()"  class="btn-ghost">Fermer</button>
                 <button onclick="saveCookieChoices()" class="btn-primary">Enregistrer</button>
@@ -389,14 +418,14 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </div>
     </div>
 </div>
- 
+
 <!-- ══════════════════════════════════════════════
      HEADER — Barre supérieure + Logo + Navigation
 ══════════════════════════════════════════════ -->
 <header class="navbar shadow-sm">
- 
+
     <div style="border-bottom:1px solid var(--border)">
- 
+
         <!-- Date : sur sa propre ligne pour libérer l'espace sur mobile -->
         <div class="max-w-7xl mx-auto px-4 pt-1.5 text-xs"
              style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
@@ -407,24 +436,20 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             echo $jours[date("N")-1] . " " . date("d") . " " . $mois[(int)date("n")] . " " . date("Y");
             ?>
         </div>
- 
-        <!--
-            Liens utilisateur — CORRECTION passe 6 :
-            overflow:hidden sur le wrapper + overflow-x:auto + min-width:max-content
-            sur le flex intérieur UNIQUEMENT.
-            Cela évite le bug de re-rendu en boucle qui survenait quand
-            overflow-x:auto était posé directement sur un enfant de position:sticky.
-        -->
-        <div class="max-w-7xl mx-auto px-4 pb-1.5">
-        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs py-1"
-         style="font-family:'Source Sans 3',sans-serif;color:var(--muted);">
- 
+
+        <!-- Overflow:hidden sur le wrapper + overflow-x:auto + min-width:max-content
+            sur le flex intérieur UNIQUEMENT. -->
+        <div class="max-w-7xl mx-auto px-4 pb-1.5" style="overflow:hidden;">
+            <div class="topbar-scroll flex items-center gap-2 text-xs py-1"
+                 style="font-family:'Source Sans 3',sans-serif;color:var(--muted);
+                        overflow-x:auto;min-width:max-content;width:100%;max-width:100%;">
+
                 <?php if ($user): ?>
                     <span style="color:var(--text2);">
                         Bonjour&nbsp;<strong style="color:var(--text)"><?= htmlspecialchars($user['username']) ?></strong>
                     </span>
                     <span class="topbar-sep">|</span>
- 
+
                     <?php if ($isAdmin): ?>
                     <a href="<?= BASE_URL ?>/admin"
                        class="font-semibold whitespace-nowrap"
@@ -435,29 +460,29 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     </a>
                     <span class="topbar-sep">|</span>
                     <?php endif; ?>
- 
+
                     <a href="<?= BASE_URL ?>/profil" class="whitespace-nowrap"
                        style="color:<?= str_ends_with($currentUri,'/profil') ? '#1d8fd8' : 'var(--text2)' ?>">
                         👤 Profil
                     </a>
                     <span class="topbar-sep">|</span>
- 
+
                     <a href="<?= BASE_URL ?>/compte" class="whitespace-nowrap"
                        style="color:<?= str_ends_with($currentUri,'/compte') ? '#1d8fd8' : 'var(--text2)' ?>">
                         ✏️ Compte
                     </a>
                     <span class="topbar-sep">|</span>
- 
+
                     <a href="<?= BASE_URL ?>/logout" class="whitespace-nowrap" style="color:var(--text2)">
                         Déconnexion
                     </a>
- 
+
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/login"    class="whitespace-nowrap" style="color:var(--text2)">Connexion</a>
                     <span class="topbar-sep">|</span>
                     <a href="<?= BASE_URL ?>/register" class="whitespace-nowrap" style="color:var(--text2)">Inscription</a>
                 <?php endif; ?>
- 
+
                 <!-- Toggle thème dark/light -->
                 <button class="theme-toggle ml-1" onclick="toggleTheme()"
                         title="Changer le thème" aria-label="Changer le thème">
@@ -473,11 +498,11 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                         <span class="moon-icon" style="display:none">🌙</span>
                     </div>
                 </button>
- 
+
             </div>
         </div>
     </div>
- 
+
     <!-- Logo -->
     <div class="max-w-7xl mx-auto px-4 py-4">
         <a href="<?= BASE_URL ?>/" class="group flex items-center justify-center gap-4">
@@ -500,7 +525,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             </div>
         </a>
     </div>
- 
+
     <!-- Navigation principale avec scroll horizontal silencieux sur mobile -->
     <nav class="max-w-7xl mx-auto px-4" style="border-top:1px solid var(--border)">
         <ul class="topbar-scroll flex items-center gap-6 py-3 overflow-x-auto"
@@ -526,9 +551,9 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             <?php endforeach; ?>
         </ul>
     </nav>
- 
+
 </header>
- 
+
 <!-- ══════════════════════════════════════════════
      FLASH MESSAGES
 ══════════════════════════════════════════════ -->
@@ -545,21 +570,21 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     <?php endforeach; ?>
 </div>
 <?php endif; ?>
- 
+
 <!-- ══════════════════════════════════════════════
      CONTENU PRINCIPAL
 ══════════════════════════════════════════════ -->
-<main class="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+<main id="main-content" role="main" class="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
     <?php require $viewPath; ?>
 </main>
- 
+
 <!-- ══════════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════════ -->
 <footer style="background:var(--bg2);border-top:2px solid;border-image:linear-gradient(135deg,#1d8fd8,#22d3ee) 1;margin-top:auto;">
     <div class="max-w-7xl mx-auto px-4 py-10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
- 
+
             <!-- Logo + description -->
             <div class="flex flex-col items-start gap-3">
                 <img src="<?= BASE_URL ?>/assets/images/Logo_Blog_couleur_avec_fond_blanc.png"
@@ -573,7 +598,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     </p>
                 </div>
             </div>
- 
+
             <!-- Navigation -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text"
@@ -588,7 +613,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     <?php endforeach; ?>
                 </ul>
             </div>
- 
+
             <!-- Mentions légales -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text"
@@ -606,7 +631,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     </li>
                 </ul>
             </div>
- 
+
             <!-- Réseaux sociaux -->
             <div>
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-3 brand-gradient-text"
@@ -627,7 +652,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 </p>
             </div>
         </div>
- 
+
         <div class="mt-8 pt-6 text-center text-xs"
              style="border-top:1px solid var(--border);color:var(--muted);font-family:'Source Sans 3',sans-serif;">
             © <?= date('Y') ?> Bienvenue à Angoulême — Tous droits réservés —
@@ -637,7 +662,7 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </div>
     </div>
 </footer>
- 
+
 <!-- ══════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════ -->
@@ -663,10 +688,10 @@ function toggleTheme() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(saved ? saved === 'dark' : prefersDark);
 })();
- 
+
 // ── Gestion des cookies ───────────────────────────────────
 const COOKIE_KEY = 'bwa_cookies_choice';
- 
+
 function cookieAccept() {
     localStorage.setItem(COOKIE_KEY, JSON.stringify({
         choice: 'accepted', youtube: true, vimeo: true, dailymotion: true
@@ -688,7 +713,7 @@ function closeCookieModal() {
 }
 function cookieAcceptAll() { saveCookieChoices(true); }
 function cookieDenyAll()   { saveCookieChoices(false); }
- 
+
 function toggleCookie(service, allow) {
     const a = document.querySelector('.cookie-btn-allow-' + service);
     const d = document.querySelector('.cookie-btn-deny-'  + service);
@@ -708,7 +733,7 @@ function saveCookieChoices(all = null) {
 function hideCookieBanner() {
     document.getElementById('cookie-banner').style.display = 'none';
 }
- 
+
 // Affiche la bannière cookies si pas de choix enregistré (délai 1.2s)
 (function () {
     if (!localStorage.getItem(COOKIE_KEY)) {
@@ -718,6 +743,6 @@ function hideCookieBanner() {
     }
 })();
 </script>
- 
+
 </body>
 </html>

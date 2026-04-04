@@ -92,11 +92,11 @@ empêchant l'injection de code JavaScript (XSS) dans les pages.
 
 **Trois niveaux d'accès** sont implémentés :
 
-| Niveau | Description | Routes concernées |
-|---|---|---|
-| **Visiteur** | Non connecté | Pages publiques uniquement |
-| **Membre** | Connecté, rôle `member` | + Profil, compte, commentaires, likes |
-| **Admin** | Connecté, rôle `admin` | + Toutes les routes `/admin/*` |
+|    Niveau    |       Description       |           Routes concernées           |
+|--------------|-------------------------|---------------------------------------| 
+| **Visiteur** | Non connecté            | Pages publiques uniquement            |
+| **Membre**   | Connecté, rôle `member` | + Profil, compte, commentaires, likes |
+| **Admin**    | Connecté, rôle `admin`  | + Toutes les routes `/admin/*`        |
 
 La protection est appliquée directement dans le `Router` :
 ```php
@@ -176,15 +176,15 @@ indépendamment de la validation HTML5 côté client :
 
 ## Récapitulatif des vecteurs d'attaque couverts
 
-| Attaque | Mécanisme de protection |
-|---|---|
-| Injection SQL | PDO + requêtes préparées |
+|           Attaque          |          Mécanisme de protection          |
+|----------------------------|-------------------------------------------|
+| Injection SQL              | PDO + requêtes préparées                  |
 | XSS (Cross-Site Scripting) | htmlspecialchars() sur toutes les sorties |
-| CSRF | Token CSRF sur tous les formulaires POST |
-| Brute force mot de passe | bcrypt (coût de calcul élevé) |
-| Session fixation | session_regenerate_id() à la connexion |
-| Directory listing | Options -Indexes dans .htaccess |
-| Accès non autorisé | Vérification auth + rôle dans le Router |
-| Timing attack | hash_equals() pour comparaison CSRF |
-| Injection de rôle | Whitelist côté serveur |
+| CSRF                       | Token CSRF sur tous les formulaires POST  |
+| Brute force mot de passe   | bcrypt (coût de calcul élevé)             |
+| Session fixation           | session_regenerate_id() à la connexion    |
+| Directory listing          | Options -Indexes dans .htaccess           |
+| Accès non autorisé         | Vérification auth + rôle dans le Router   |
+| Timing attack              | hash_equals() pour comparaison CSRF       |
+| Injection de rôle          | Whitelist côté serveur                    |
 
