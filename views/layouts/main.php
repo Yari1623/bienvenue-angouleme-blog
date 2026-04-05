@@ -332,7 +332,7 @@ use App\Core\Auth;
 use App\Core\Flash;
 
 // Données utilisateur — utilisées dans header et footer
-$user       = Auth::user();
+$authUser   = Auth::user();
 $isAdmin    = Auth::isAdmin();
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 ?>
@@ -437,16 +437,21 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             ?>
         </div>
 
-        <!-- Overflow:hidden sur le wrapper + overflow-x:auto + min-width:max-content
-            sur le flex intérieur UNIQUEMENT. -->
+        <!--
+            Liens utilisateur — CORRECTION passe 6 :
+            overflow:hidden sur le wrapper + overflow-x:auto + min-width:max-content
+            sur le flex intérieur UNIQUEMENT.
+            Cela évite le bug de re-rendu en boucle qui survenait quand
+            overflow-x:auto était posé directement sur un enfant de position:sticky.
+        -->
         <div class="max-w-7xl mx-auto px-4 pb-1.5" style="overflow:hidden;">
             <div class="topbar-scroll flex items-center gap-2 text-xs py-1"
                  style="font-family:'Source Sans 3',sans-serif;color:var(--muted);
                         overflow-x:auto;min-width:max-content;width:100%;max-width:100%;">
 
-                <?php if ($user): ?>
+                <?php if ($authUser): ?>
                     <span style="color:var(--text2);">
-                        Bonjour&nbsp;<strong style="color:var(--text)"><?= htmlspecialchars($user['username']) ?></strong>
+                        Bonjour&nbsp;<strong style="color:var(--text)"><?= htmlspecialchars($authUser['username']) ?></strong>
                     </span>
                     <span class="topbar-sep">|</span>
 

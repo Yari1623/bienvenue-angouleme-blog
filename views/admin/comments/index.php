@@ -9,9 +9,9 @@ $totalPages    = max(1, (int)ceil($totalItems / $perPage));
 $currentPage   = min($currentPage, $totalPages);
 $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $perPage);
 ?>
-
+ 
 <div class="space-y-6">
-
+ 
     <div class="flex flex-wrap items-start justify-between gap-3 pb-4"
          style="border-bottom:2px solid var(--border)">
         <div>
@@ -25,7 +25,7 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
         <a href="<?= BASE_URL ?>/admin" class="text-sm"
            style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">← Dashboard</a>
     </div>
-
+ 
     <!-- Filtres -->
     <div class="flex gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;font-size:.875rem;">
         <a href="<?= BASE_URL ?>/admin/comments"
@@ -42,20 +42,20 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
             <?php endif; ?>
         </a>
     </div>
-
+ 
     <?php if (empty($comments)): ?>
     <div class="text-center py-16" style="color:var(--muted);font-family:'Source Sans 3',sans-serif;">
         <p class="text-4xl mb-3">💬</p>
         <p>Aucun commentaire<?= $currentFilter === 'pending' ? ' en attente' : '' ?>.</p>
     </div>
     <?php else: ?>
-
+ 
     <!-- ═══ VUE MOBILE : cartes ═══ -->
     <div class="md:hidden space-y-3">
         <?php foreach ($pageItems as $comment): ?>
         <div class="surface rounded-xl p-4 space-y-3"
              style="<?= $comment['status'] === 'pending' ? 'border-left:3px solid #f97316;' : '' ?>">
-
+ 
             <!-- Auteur + date + statut -->
             <div class="flex items-center justify-between gap-2 flex-wrap">
                 <div>
@@ -79,13 +79,13 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
                     }; ?>
                 </span>
             </div>
-
+ 
             <!-- Extrait -->
             <p style="font-size:.875rem;color:var(--text2);font-family:'Source Sans 3',sans-serif;
                       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
                 <?= htmlspecialchars($comment['content']) ?>
             </p>
-
+ 
             <!-- Boutons -->
             <div class="flex flex-wrap gap-2">
                 <button onclick="openCommentModal(<?= $comment['id'] ?>)"
@@ -129,7 +129,7 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
         </div>
         <?php endforeach; ?>
     </div>
-
+ 
     <!-- ═══ VUE DESKTOP : tableau ═══ -->
     <div class="hidden md:block" style="overflow-x:auto;border-radius:.75rem;border:1px solid var(--border);">
         <table style="width:100%;font-family:'Source Sans 3',sans-serif;font-size:.875rem;border-collapse:collapse;">
@@ -193,7 +193,7 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
             </tbody>
         </table>
     </div>
-
+ 
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
     <div class="flex justify-center items-center gap-2 flex-wrap" style="font-family:'Source Sans 3',sans-serif;">
@@ -213,22 +213,31 @@ $pageItems     = array_slice($comments ?? [], ($currentPage - 1) * $perPage, $pe
         <?php endif; ?>
     </div>
     <?php endif; ?>
-
+ 
     <?php endif; ?>
 </div>
-
+ 
 <script>
-const COMMENTS_DATA = {
-    <?php foreach ($comments as $c): ?>
-    <?= $c['id'] ?>: {
-        id: <?= $c['id'] ?>, username: <?= json_encode($c['username']) ?>, content: <?= json_encode($c['content']) ?>,
-        post_title: <?= json_encode($c['post_title'] ?? '') ?>, post_slug: <?= json_encode($c['post_slug'] ?? '') ?>,
-        date: <?= json_encode(date('d/m/Y à H:i', strtotime($c['created_at']))) ?>,
-        status: <?= json_encode($c['status']) ?>, csrf: <?= json_encode(\App\Core\Csrf::generate()) ?>,
-    },
-    <?php endforeach; ?>
+<?php
+// Construire le tableau PHP proprement puis le sérialiser en JSON d'un bloc
+// Évite tout problème d'apostrophe / guillemet / retour à la ligne dans le contenu
+$commentsJs = [];
+foreach ($comments as $c) {
+    $commentsJs[$c['id']] = [
+        'id'         => (int) $c['id'],
+        'username'   => $c['username'],
+        'content'    => $c['content'],
+        'post_title' => $c['post_title'] ?? '',
+        'post_slug'  => $c['post_slug']  ?? '',
+        'date'       => date('d/m/Y à H:i', strtotime($c['created_at'])),
+        'status'     => $c['status'],
+        'csrf'       => \App\Core\Csrf::generate(),
+    ];
+}
+?>
+const COMMENTS_DATA = <?= json_encode($commentsJs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>;
 </script>
-
+ 
 <div id="comment-modal" class="fixed inset-0 z-50 items-center justify-center p-4"
      style="display:none;background:rgba(0,0,0,.6);">
     <div class="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
@@ -253,7 +262,7 @@ const COMMENTS_DATA = {
         <div id="modal-actions" class="flex items-center justify-end gap-3 px-6 py-4 flex-wrap" style="border-top:1px solid var(--border);"></div>
     </div>
 </div>
-
+ 
 <script>
 function openCommentModal(id) {
     const c = COMMENTS_DATA[id]; if (!c) return;
