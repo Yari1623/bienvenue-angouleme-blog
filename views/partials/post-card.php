@@ -39,7 +39,8 @@ if (!function_exists('dateFr')) {
             : BASE_URL . '/assets/images/visuel_à_venir.jpg'; ?>
         <img src="<?= $imgSrc ?>"
              alt="<?= htmlspecialchars($post['title']) ?>"
-             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            onerror="this.onerror=null;this.src='<?= BASE_URL ?>/assets/images/visuel_à_venir.jpg';">
     </div>
  
     <!-- Catégorie (gauche) + Lieu (droite) -->
