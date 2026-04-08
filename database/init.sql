@@ -1,5 +1,5 @@
 -- =============================================================
--- database/schema.sql
+-- database/init.sql
 -- Base de données : bienvenue_blog
 -- Moteur         : MySQL 9.x / MariaDB 10.x
 -- Encodage       : utf8mb4 (support emojis et caractères spéciaux)
