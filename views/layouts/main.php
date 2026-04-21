@@ -139,16 +139,17 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             Cela évite le bug de re-rendu en boucle qui survenait quand
             overflow-x:auto était posé directement sur un enfant de position:sticky.
         -->
-        <div class="max-w-7xl mx-auto px-4 pb-1.5" style="overflow:hidden;">
-            <div class="topbar-scroll flex items-center gap-2 text-xs py-1"
-                 style="font-family:'Source Sans 3',sans-serif;color:var(--muted);
-                        overflow-x:auto;min-width:max-content;width:100%;max-width:100%;">
+        <div class="max-w-7xl mx-auto px-4 pb-1.5">
+            <div class="flex items-center justify-between flex-wrap gap-y-1 text-xs py-1"
+                 style="font-family:'Source Sans 3',sans-serif;color:var(--muted);">
  
+                <!-- Liens utilisateur — wrappent naturellement sur mobile -->
+                <div class="flex items-center flex-wrap gap-x-2 gap-y-1">
                 <?php if ($authUser): ?>
                     <span style="color:var(--text2);">
                         Bonjour&nbsp;<strong style="color:var(--text)"><?= htmlspecialchars($authUser['username']) ?></strong>
                     </span>
-                    <span class="topbar-sep">|</span>
+                    <span class="topbar-sep hidden sm:inline">|</span>
  
                     <?php if ($isAdmin): ?>
                     <a href="<?= BASE_URL ?>/admin"
@@ -158,20 +159,20 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                               background-clip:text;">
                         ⚙ Dashboard
                     </a>
-                    <span class="topbar-sep">|</span>
+                    <span class="topbar-sep hidden sm:inline">|</span>
                     <?php endif; ?>
  
                     <a href="<?= BASE_URL ?>/profil" class="whitespace-nowrap"
                        style="color:<?= str_ends_with($currentUri,'/profil') ? '#1d8fd8' : 'var(--text2)' ?>">
                         👤 Profil
                     </a>
-                    <span class="topbar-sep">|</span>
+                    <span class="topbar-sep hidden sm:inline">|</span>
  
                     <a href="<?= BASE_URL ?>/compte" class="whitespace-nowrap"
                        style="color:<?= str_ends_with($currentUri,'/compte') ? '#1d8fd8' : 'var(--text2)' ?>">
                         ✏️ Compte
                     </a>
-                    <span class="topbar-sep">|</span>
+                    <span class="topbar-sep hidden sm:inline">|</span>
  
                     <a href="<?= BASE_URL ?>/logout" class="whitespace-nowrap" style="color:var(--text2)">
                         Déconnexion
@@ -179,12 +180,13 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
  
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/login"    class="whitespace-nowrap" style="color:var(--text2)">Connexion</a>
-                    <span class="topbar-sep">|</span>
+                    <span class="topbar-sep hidden sm:inline">|</span>
                     <a href="<?= BASE_URL ?>/register" class="whitespace-nowrap" style="color:var(--text2)">Inscription</a>
                 <?php endif; ?>
+                </div>
  
-                <!-- Toggle thème dark/light -->
-                <button class="theme-toggle ml-1" onclick="toggleTheme()"
+                <!-- Toggle thème dark/light — toujours visible -->
+                <button class="theme-toggle flex-shrink-0" onclick="toggleTheme()"
                         title="Changer le thème" aria-label="Changer le thème">
                     <div class="toggle-track">
                         <div class="toggle-cloud" style="width:18px;height:7px;bottom:8px;left:8px;"></div>
@@ -226,31 +228,117 @@ $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </a>
     </div>
  
-    <!-- Navigation principale avec scroll horizontal silencieux sur mobile -->
+    <!-- Navigation principale — hamburger sur mobile, liens sur desktop -->
     <nav class="max-w-7xl mx-auto px-4" style="border-top:1px solid var(--border)">
-        <ul class="topbar-scroll flex items-center gap-6 py-3 overflow-x-auto"
-            style="font-family:'Source Sans 3',sans-serif;">
-            <?php
-            $navItems = [
-                ['url' => '/',          'label' => 'Accueil'],
-                ['url' => '/blog',       'label' => 'Blog'],
-                ['url' => '/categories', 'label' => 'Catégories'],
-                ['url' => '/agenda',     'label' => 'Agenda'],
-                ['url' => '/a-propos',   'label' => 'À propos'],
-                ['url' => '/contact',    'label' => 'Contact'],
-            ];
-            foreach ($navItems as $item):
-                $isActive = rtrim($currentUri, '/') === rtrim(BASE_URL . $item['url'], '/');
-            ?>
-            <li>
-                <a href="<?= BASE_URL . $item['url'] ?>"
-                   class="nav-link whitespace-nowrap <?= $isActive ? 'active' : '' ?>">
-                    <?= $item['label'] ?>
-                </a>
-            </li>
-            <?php endforeach; ?>
-        </ul>
+        <?php
+        $navItems = [
+            ['url' => '/',          'label' => 'Accueil'],
+            ['url' => '/blog',       'label' => 'Blog'],
+            ['url' => '/categories', 'label' => 'Catégories'],
+            ['url' => '/agenda',     'label' => 'Agenda'],
+            ['url' => '/a-propos',   'label' => 'À propos'],
+            ['url' => '/contact',    'label' => 'Contact'],
+        ];
+        ?>
+ 
+        <!-- Ligne nav : liens desktop + bouton hamburger mobile -->
+        <div class="flex items-center justify-between py-2">
+ 
+            <!-- Liens desktop (cachés sur mobile) -->
+            <ul class="hidden md:flex items-center gap-6"
+                style="font-family:'Source Sans 3',sans-serif;">
+                <?php foreach ($navItems as $item):
+                    $isActive = rtrim($currentUri, '/') === rtrim(BASE_URL . $item['url'], '/');
+                ?>
+                <li>
+                    <a href="<?= BASE_URL . $item['url'] ?>"
+                       class="nav-link whitespace-nowrap <?= $isActive ? 'active' : '' ?>">
+                        <?= $item['label'] ?>
+                    </a>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+ 
+            <!-- Bouton hamburger (visible uniquement sur mobile) -->
+            <button id="nav-toggle"
+                    class="md:hidden flex flex-col justify-center items-center gap-1.5 p-2 rounded-lg"
+                    style="background:transparent;border:1.5px solid var(--border);cursor:pointer;width:40px;height:40px;"
+                    aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-menu">
+                <span class="hamburger-line" style="display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;"></span>
+                <span class="hamburger-line" style="display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;"></span>
+                <span class="hamburger-line" style="display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s;"></span>
+            </button>
+ 
+            <!-- Placeholder invisible sur desktop pour centrer les liens si besoin -->
+            <div class="hidden md:block w-10"></div>
+        </div>
+ 
+        <!-- Menu mobile déroulant (caché par défaut) -->
+        <div id="nav-menu"
+             style="display:none;border-top:1px solid var(--border);padding-bottom:.5rem;">
+            <ul style="font-family:'Source Sans 3',sans-serif;">
+                <?php foreach ($navItems as $item):
+                    $isActive = rtrim($currentUri, '/') === rtrim(BASE_URL . $item['url'], '/');
+                ?>
+                <li>
+                    <a href="<?= BASE_URL . $item['url'] ?>"
+                       style="display:block;padding:.6rem .25rem;font-size:.95rem;font-weight:600;
+                              color:<?= $isActive ? '#1d8fd8' : 'var(--text2)' ?>;
+                              border-bottom:1px solid var(--border);"
+                       onclick="closeNav()">
+                        <?= $item['label'] ?>
+                        <?php if ($isActive): ?>
+                        <span style="float:right;color:#1d8fd8;">›</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </nav>
+ 
+    <script>
+    (function(){
+        const btn  = document.getElementById('nav-toggle');
+        const menu = document.getElementById('nav-menu');
+        if (!btn || !menu) return;
+ 
+        function openNav(){
+            menu.style.display = 'block';
+            btn.setAttribute('aria-expanded','true');
+            // Transformer hamburger en ✕
+            const lines = btn.querySelectorAll('.hamburger-line');
+            if(lines[0]) lines[0].style.transform='translateY(7px) rotate(45deg)';
+            if(lines[1]) lines[1].style.opacity='0';
+            if(lines[2]) lines[2].style.transform='translateY(-7px) rotate(-45deg)';
+        }
+        function closeNav(){
+            menu.style.display = 'none';
+            btn.setAttribute('aria-expanded','false');
+            const lines = btn.querySelectorAll('.hamburger-line');
+            if(lines[0]) lines[0].style.transform='';
+            if(lines[1]) lines[1].style.opacity='1';
+            if(lines[2]) lines[2].style.transform='';
+        }
+        window.closeNav = closeNav;
+ 
+        btn.addEventListener('click', function(){
+            menu.style.display === 'none' ? openNav() : closeNav();
+        });
+ 
+        // Fermer le menu si on clique en dehors
+        document.addEventListener('click', function(e){
+            if (menu.style.display !== 'none' && !btn.contains(e.target) && !menu.contains(e.target)) {
+                closeNav();
+            }
+        });
+ 
+        // Fermer le menu sur Escape
+        document.addEventListener('keydown', function(e){
+            if(e.key === 'Escape') closeNav();
+        });
+    })();
+    </script>
  
 </header>
  
