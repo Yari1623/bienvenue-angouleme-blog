@@ -6,10 +6,12 @@ $pageTitle = '404 — Page introuvable';
 <div class="text-center py-24">
  
     <!-- Grand 404 décoratif -->
-    <div class="font-display text-9xl font-black leading-none select-none"
-         style="background:linear-gradient(135deg,#1d8fd8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:.15;">
-        404
-    </div>
+    <div class="relative text-center">
+    <img
+        src="<?= BASE_URL ?>/assets/images/page-404.png"
+        alt="Page 404"
+        class="mx-auto max-w-md w-full">
+</div>
  
     <h2 class="font-display text-3xl font-bold mt-4 mb-3" style="color:var(--text)">
         Page introuvable

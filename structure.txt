@@ -4,46 +4,47 @@ bienvenue-angouleme-blog
 │   ├── controllers
 │   │   ├── AboutController.php
 │   │   ├── AccountController.php
-│   │   ├── AdminController.php
 │   │   ├── BlogController.php
 │   │   ├── CategoriesController.php
 │   │   ├── CategoryController.php
 │   │   ├── CommentController.php
 │   │   ├── ContactController.php
-│   │   ├── ErrorController.php
 │   │   ├── EventController.php
 │   │   ├── HistoireController.php
-│   │   ├── HomeController.php
 │   │   ├── LegalController.php
-│   │   ├── LoginController.php
-│   │   ├── PostController.php
 │   │   ├── ProfileController.php
-│   │   ├── RegisterController.php
-│   │   └── UserController.php
+│   │   ├── UserController.php
+│   │   ├── admincontroller.php
+│   │   ├── errorcontroller.php
+│   │   ├── homecontroller.php
+│   │   ├── logincontroller.php
+│   │   ├── postcontroller.php
+│   │   └── registercontroller.php
 │   ├── core
-│   │   ├── Auth.php
-│   │   ├── Autoloader.php
-│   │   ├── Controller.php
 │   │   ├── Csrf.php
-│   │   ├── Database.php
-│   │   ├── Env.php
-│   │   ├── Flash.php
-│   │   ├── Model.php
-│   │   └── Router.php
+│   │   ├── auth.php
+│   │   ├── autoloader.php
+│   │   ├── controller.php
+│   │   ├── database.php
+│   │   ├── env.php
+│   │   ├── flash.php
+│   │   ├── model.php
+│   │   └── router.php
 │   ├── helpers
-│   │   └── Slug.php
+│   │   └── slug.php
 │   └── models
 │       ├── Category.php
-│       ├── Comment.php
 │       ├── Event.php
 │       ├── Place.php
-│       ├── Post.php
-│       └── User.php
+│       ├── comment.php
+│       ├── post.php
+│       └── user.php
 ├── config
 │   ├── database.php
 │   └── routes.php
 ├── database
-│   └── schema.sql
+│   ├── init.sql
+│   └── seed.sql
 ├── documentation
 │   ├── 01-presentation-projet.md
 │   ├── 02-choix-techniques.md
@@ -52,6 +53,8 @@ bienvenue-angouleme-blog
 │   ├── 05-securite.md
 │   ├── 06-deploiement.md
 │   ├── 07-evolutions-possibles.md
+│   ├── Déploiement_en_ligne_pas_a_pas.md
+│   ├── design-system.html
 │   └── oral-preparation.md
 ├── public
 │   ├── assets
@@ -68,18 +71,26 @@ bienvenue-angouleme-blog
 │   │   │   ├── Nature_Environnement.png
 │   │   │   ├── Social.png
 │   │   │   └── Sports.png
+│   │   ├── css
+│   │   │   └── app.css
 │   │   ├── icones
 │   │   │   ├── Facebook.png
 │   │   │   ├── Instagram.png
 │   │   │   ├── TikTok.png
 │   │   │   └── YouTube.png
 │   │   ├── images
+│   │   │   ├── B0019372.jpg
 │   │   │   ├── Logo_Blog_couleur_avec_fond_blanc.png
 │   │   │   ├── maintenance.jpg
 │   │   │   ├── page-404.jpg
 │   │   │   ├── panorama_angouleme.jpg
 │   │   │   ├── tour_mairie_angouleme.jpg
 │   │   │   └── visuel_à_venir.jpg
+│   │   ├── js
+│   │   │   ├── admin-comments.js
+│   │   │   ├── admin-editor.js
+│   │   │   ├── app.js
+│   │   │   └── tailwind.config.js
 │   │   └── lieux
 │   │       ├── angouleme.png
 │   │       ├── charente.png
