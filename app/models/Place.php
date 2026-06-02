@@ -14,7 +14,7 @@ class Place extends Model
             FROM places pl
             LEFT JOIN posts p ON p.place_id = pl.id AND p.status = 'published'
             GROUP BY pl.id
-            ORDER BY pl.name ASC
+            ORDER BY pl.id ASC
         ");
         return $stmt->fetchAll();
     }
