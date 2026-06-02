@@ -133,8 +133,8 @@ $pageTitle = 'À propos — Bienvenue à Angoulême';
             <div class="shrink-0">
                 <div class="w-28 h-28 rounded-full overflow-hidden shadow-lg"
                      style="border:3px solid;border-image:linear-gradient(135deg,#1d8fd8,#22d3ee) 1;border-radius:9999px;">
-                    <img src="<?= BASE_URL ?>/assets/images/photo-auteur.jpg"
-                         alt="Photo de l'auteur"
+                    <img src="<?= BASE_URL ?>/assets/images/Yannick-RICHARD.jpg"
+                         alt="Auteur"
                          class="w-full h-full object-cover"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <!-- Fallback si la photo n'existe pas encore -->
