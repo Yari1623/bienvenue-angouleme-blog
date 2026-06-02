@@ -79,10 +79,9 @@ bienvenue-angouleme-blog
 │   │   │   ├── TikTok.png
 │   │   │   └── YouTube.png
 │   │   ├── images
-│   │   │   ├── B0019372.jpg
 │   │   │   ├── Logo_Blog_couleur_avec_fond_blanc.png
-│   │   │   ├── maintenance.jpg
-│   │   │   ├── page-404.jpg
+│   │   │   ├── Yannick-RICHARD.jpg
+│   │   │   ├── page-404.png
 │   │   │   ├── panorama_angouleme.jpg
 │   │   │   ├── tour_mairie_angouleme.jpg
 │   │   │   └── visuel_à_venir.jpg
