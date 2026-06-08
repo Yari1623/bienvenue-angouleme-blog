@@ -48,14 +48,14 @@ Le projet couvre l'intégralité d'un blog professionnel :
 
 |         Indicateur         |    Valeur    |
 |----------------------------|--------------|
-| Tables en base de données  | 10           |
+| Tables en base de données  | 11           |
 | Controllers                | 18           |
 | Modèles                    | 6            |
-| Fichiers de vues           | ~45          |
-| Routes déclarées           | ~40          |
-| Articles de test           | 48           |
+| Fichiers de vues           | ~30          |
+| Routes déclarées           | ~50          |
+| Articles de test           | 50           |
 | Utilisateurs de test       | 10           |
-| Durée de développement     | ~6 semaines  |
+| Durée de développement     | ~6 mois      |
 
 ## Public cible
 
@@ -79,4 +79,4 @@ Le projet couvre l'intégralité d'un blog professionnel :
 
 ## Lien GitHub
 
-> À compléter avec l'URL du dépôt public avant la soutenance.
+> https://github.com/Yari1623/bienvenue-angouleme-blog
