@@ -1,4 +1,5 @@
 <?php
+// app/controllers/CategoriesController.php
 
 namespace App\Controllers;
 

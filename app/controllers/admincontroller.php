@@ -18,7 +18,7 @@ use App\Models\User;
  * - Commentaires en attente
  * - 4 graphiques Chart.js (publications/mois, statuts, catégories, inscriptions)
  *
- * CORRECTION passe 6 : suppression des imports Event et Category inutilisés.
+ * CORRECTION : suppression des imports Event et Category inutilisés.
  */
 class AdminController extends Controller
 {

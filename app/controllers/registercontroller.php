@@ -1,4 +1,5 @@
 <?php
+// app/controllers/registerController.php
 
 namespace App\Controllers;
 

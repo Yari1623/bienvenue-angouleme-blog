@@ -18,7 +18,7 @@ bienvenue-angouleme-blog/
 ├── config/
 │   ├── routes.php    ← Déclaration de toutes les routes
 │   └── database.php  ← Configuration BDD (lecture depuis .env)
-├── views/            ← ~45 fichiers de vues PHP
+├── views/            ← ~30 fichiers de vues PHP
 └── .env              ← Variables d'environnement (non versionné)
 ```
 

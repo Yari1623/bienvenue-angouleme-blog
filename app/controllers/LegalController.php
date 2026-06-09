@@ -1,4 +1,5 @@
 <?php
+// app/controllers/LegalController.php
 
 namespace App\Controllers;
 

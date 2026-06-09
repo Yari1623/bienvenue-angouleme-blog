@@ -31,7 +31,7 @@ class AccountController extends Controller
     /**
      * Met à jour les informations personnelles.
      *
-     * CORRECTION passe 6 :
+     * CORRECTION
      * - Passe par User::update() au lieu de SQL direct (cohérence MVC)
      * - Suppression de la mise à jour $_SESSION['user'] inutile
      *   (Auth::user() recharge depuis la BDD via le cache statique)
