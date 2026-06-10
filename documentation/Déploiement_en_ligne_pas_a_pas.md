@@ -27,7 +27,7 @@
    - DB Password (choisir un mot de passe fort)
 4. Accéder à phpMyAdmin via le Control Panel
 5. Sélectionner votre base → onglet "Import"
-6. Choisir database/schema.sql → Exécuter
+6. Choisir database/init.sql → Exécuter
 
 ### Étape 4 — Préparer le fichier .env
 Créer un fichier .env LOCAL avec vos vrais paramètres :

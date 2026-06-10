@@ -72,12 +72,12 @@ APP_DEBUG=true
 ### Étape 3 — Importer la base de données
 Via phpMyAdmin :
 1. Créer une nouvelle base `bienvenue_blog` (utf8mb4_unicode_ci)
-2. Onglet Import → sélectionner `database/schema.sql`
+2. Onglet Import → sélectionner `database/init.sql`
 3. Cliquer Exécuter
 
 Ou en ligne de commande :
 ```bash
-mysql -u root -p < database/schema.sql
+mysql -u root -p < database/init.sql
 ```
 
 ### Étape 4 — Configurer le VirtualHost WAMP (optionnel)
@@ -119,7 +119,7 @@ Via cPanel → MySQL Databases :
 1. Créer une base de données
 2. Créer un utilisateur MySQL avec mot de passe fort
 3. Associer l'utilisateur à la base avec tous les privilèges
-4. Importer `database/schema.sql` via phpMyAdmin
+4. Importer `database/init.sql` via phpMyAdmin
 
 ### Étape 4 — Configurer .env en production
 Créer le fichier `.env` directement sur le serveur (via FTP ou SSH) :
@@ -134,7 +134,7 @@ APP_DEBUG=false
 ```
 
 ### Étape 5 — Changer le mot de passe administrateur
-Le compte admin par défaut du `schema.sql` doit être changé immédiatement :
+Le compte admin par défaut du `init.sql` doit être changé immédiatement :
 1. Se connecter avec `admin@bienvenue-angouleme.fr` / `Admin1234!`
 2. Aller dans Mon compte → Changer le mot de passe
 3. Définir un mot de passe fort
